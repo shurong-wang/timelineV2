@@ -1,0 +1,381 @@
+/*
+ * Base structure
+ */
+
+
+/* Move down content because we have a fixed navbar that is 50px tall */
+
+body {
+    background-color: rgb(0, 0, 0);
+    font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
+}
+
+.content {
+    display: flex;
+    width: 100vw;
+    height: 100vh;
+    padding: 5px 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+}
+
+
+/*
+   * Main content
+   */
+
+.main {
+    flex: 1;
+    padding: 40px 20px;
+    background-color: rgb(233, 236, 237);
+    position: relative;
+}
+
+.main .graph,
+.main .poster {
+    height: 100%;
+    background-color: rgb(255, 255, 255);
+}
+
+.main .graph {
+    border: 1px solid #ccc;
+    overflow: hidden;
+}
+
+.main .graph-tools {
+    position: absolute;
+    top: 0;
+    right: 22px;
+    display: inline-block;
+    height: 40px;
+    line-height: 40px;
+    text-align: right;
+}
+
+.main .poster {
+    background-image: url(images/poster.png);
+    background-repeat: no-repeat;
+    background-position: center center;
+}
+
+.main .icon-full-screen::before,
+.main .icon-exit-full-screen::before {
+    font-weight: 600;
+}
+
+:-webkit-full-screen {
+    background-color: rgb(234, 236, 235);
+    position: fixed;
+    top: 0;
+    right: 0;
+    left: 0;
+    bottom: 0;
+}
+
+.graph-canvas {
+    width: 100%;
+    height: 100%;
+    overflow: hidden;
+}
+
+/*
+   * Sidebar
+   * ---------------------------------------------------------------------------------------------------------------------------------------
+   */
+
+.sidebar {
+    width: 240px;
+    top: 5px;
+    bottom: 5px;
+    left: 0;
+    z-index: 1000;
+    display: block;
+    padding: 0;
+    overflow-x: hidden;
+    overflow-y: hidden;
+    background-color: rgb(14, 21, 26);
+    color: rgb(159, 161, 163);
+    border-right: 1px solid #000;
+}
+
+.sidebar ul {
+    margin: 0;
+    padding: 0;
+    list-style: none;
+}
+
+.sidebar a {
+    color: rgb(163, 166, 168);
+}
+
+.sidebar .nav-tabs {
+    padding: 5px 5px 0 5px;
+    background-color: rgb(49, 53, 57);
+    border-bottom: 1px solid rgb(14, 21, 26);
+}
+
+.sidebar .logo {
+    border: 1px solid #000;
+    height: 70px;
+    background-image: url(data:image/png;base64,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);
+    background-position: center center;
+    background-repeat: no-repeat;
+}
+
+.sidebar .nav-tabs>li>a {
+    font-weight: 600;
+    border: none;
+}
+
+.sidebar .nav-tabs>li>a>label {
+    margin-bottom: 0;
+    display: none;
+}
+
+.sidebar .nav-tabs>li.active>a,
+.sidebar .nav-tabs>li.active>a:focus,
+.sidebar .nav-tabs>li.active>a:hover {
+    color: rgb(167, 170, 173);
+    cursor: default;
+    background-color: rgb(14, 21, 26);
+    border: none;
+}
+
+.sidebar .nav-tabs>li.active>a>span {
+    margin-right: 5px;
+}
+
+.sidebar .nav-tabs>li.active>a>label {
+    display: inline-block;
+}
+
+.sidebar .nav-tabs>li {
+    float: left;
+    margin-bottom: 0;
+}
+
+.sidebar .nav>li>a:focus,
+.sidebar .nav>li>a:hover {
+    color: rgb(80, 80, 80);
+}
+
+.sidebar .tab-content {
+    padding-top: 40px;
+    height: calc(100vh - 112px);
+    overflow-x: hidden;
+    overflow-y: auto;
+}
+
+.sidebar .tab-content::-webkit-scrollbar {
+    width: 4px;
+}
+
+.sidebar .tab-content::-webkit-scrollbar-track {
+    background-color: rgba(0, 0, 0, 1);
+}
+
+.sidebar .tab-content::-webkit-scrollbar-thumb {
+    background-color: rgba(46, 56, 58, 1);
+}
+
+.sidebar .search-pane,
+.sidebar .import-pane {
+    padding: 10px;
+}
+
+.search-list {
+    margin-top: 10px;
+    font-size: 12px;
+}
+
+.search-list dt,
+.search-list dd {
+    padding-top: 10px;
+    padding-bottom: 10px;
+    border-bottom: 1px solid rgb(49, 53, 57);
+}
+
+.search-list li {
+    line-height: 20px;
+}
+
+.search-list li a {
+    text-decoration: underline;
+}
+
+.search-list li .glyphicon-plus {
+    background-color: rgb(133, 139, 147);
+    border-radius: 2px;
+    margin-left: 2px;
+    transform: scale(.8);
+}
+
+.search-list li .glyphicon-plus:before {
+    color: rgb(21, 17, 30);
+    line-height: 13px;
+    text-align: center;
+}
+
+.import-list li {
+    border-bottom: 1px solid rgb(49, 53, 57);
+    padding-bottom: 5px;
+}
+
+.import-list li+li {
+    padding-top: 10px;
+}
+
+.import-list li dl {
+    margin: 0;
+    padding: 0;
+}
+
+.import-list li dt {
+    margin-bottom: 10px;
+    font-weight: 400;
+}
+
+.import-list li dt button {
+    transform: scale(.8);
+}
+
+.import-list li dd small {
+    font-size: 80%;
+}
+
+.import-list .progress {
+    height: 14px;
+    margin-bottom: 10px;
+    background-color: rgba(255, 255, 255, .1);
+    border-radius: 1px;
+}
+
+.import-list .progress-bar {
+    /* -webkit-transition: width .017s ease-in-out;
+    -o-transition: width .017s ease-in-out;
+    transition: width .017s ease-in-out; */
+    -webkit-transition: none;
+    -o-transition: none;
+    transition: none;
+}
+
+.import-list .progress-bar {
+    font-size: 12px;
+    line-height: 14px;
+    color: rgba(255, 255, 255, .8);
+    background-color: hsl(201, 83.33% , 37.65%);
+    /*
+        h：色调 -- 衍生于色盘，可以取其任意值。
+            其中该值除以 360 所得的余数
+             0 表示红色， 60 表示黄色，为 120 表示绿色，为 240 表示蓝色
+        s：饱和度，范围从 0% 到 100%。0% 表示灰度，没有颜色；100% 最鲜艳。
+        l：明亮度，范围从 0% 到 100%。0% 最暗；50% 为均值；100%最亮
+    */
+}
+
+.import-list .btn.disabled,
+.import-list .btn[disabled] {
+    cursor: default;
+    filter: alpha(opacity=65);
+    -webkit-box-shadow: none;
+    box-shadow: none;
+    opacity: .65;
+}
+
+
+/*
+   * Circle Menu
+   * ---------------------------------------------------------------------------------------------------------------------------------------
+   */
+
+.menu-circle,
+.menu-ring {
+    height: 128px;
+    position: relative;
+    width: 128px;
+}
+
+.menu-circle a:hover,
+.menu-ring a:hover {
+    text-decoration: none;
+    cursor: pointer;
+}
+
+.menu-ring {
+    background-color: rgba(0, 0, 0, 0.5);
+    border-radius: 50%;
+    opacity: 0;
+    -webkit-transform-origin: 50% 50%;
+    -moz-transform-origin: 50% 50%;
+    transform-origin: 50% 50%;
+    -webkit-transform: scale(0.1) rotate(-270deg);
+    -moz-transform: scale(0.1) rotate(-270deg);
+    -transform: scale(0.1) rotate(-270deg);
+    transform: scale(0.1) rotate(-270deg);
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+}
+
+.open .menu-ring {
+    opacity: 1;
+    -webkit-transform: scale(1) rotate(0);
+    -moz-transform: scale(1) rotate(0);
+    -transform: scale(1) rotate(0);
+    transform: scale(1) rotate(0);
+}
+
+.center {
+    background-color: rgba(169, 158, 158, 0.3);
+    border-radius: 50%;
+    border: 2px solid #ffffff;
+    bottom: 0;
+    color: white;
+    height: 42px;
+    left: 0;
+    line-height: 40px;
+    margin: auto;
+    position: absolute;
+    right: 0;
+    text-align: center;
+    top: 0;
+    width: 40px;
+    -webkit-transition: all 0.2s ease-out;
+    -moz-transition: all 0.2s ease-out;
+    transition: all 0.2s ease-out;
+}
+
+.open .center {
+    border-color: #aaaaaa;
+}
+
+.menuItem {
+    border-radius: 50%;
+    color: #eeeeee;
+    display: block;
+    height: 25px;
+    line-height: 20px;
+    margin-left: -10px;
+    margin-top: -10px;
+    position: absolute;
+    text-align: center;
+    width: 25px;
+}
+
+.single-menu .multiple-btn {
+    color: #a0a0a0;
+}
+
+.single-menu .multiple-btn:hover {
+    color: #a0a0a0;
+}
+
+.multiple-menu .single-btn {
+    color: #a0a0a0;
+}
+
+.multiple-menu .single-btn:hover {
+    color: #a0a0a0;
+}
+
+/*Circle Menu styles end*/

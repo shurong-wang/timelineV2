@@ -1,0 +1,24 @@
+[
+    {
+        "id": "91355",
+        "name": "中国科学技术信息研究所",
+        "legalPersonName": "",
+        "regStatus": "",
+        "companyOrgType": "",
+        "regCapital": "",
+        "estiblishTime": "",
+        "regLocation": "",
+        "base": ""
+    },
+    {
+        "id": "165556",
+        "name": "科学技术文献出版社",
+        "legalPersonName": "胡红亮",
+        "regStatus": "开业",
+        "companyOrgType": "全民所有制",
+        "regCapital": "300万",
+        "estiblishTime": "1986-05-15",
+        "regLocation": "北京市西城区阜内大街59号",
+        "base": "北京"
+    }
+]

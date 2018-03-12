@@ -1,0 +1,514 @@
+html,
+body {
+    margin: 0;
+    height: 100%;
+    width: 100%;
+    overflow: hidden;
+}
+
+div {
+    box-sizing: border-box;
+}
+
+.zoom-overlay {
+    fill: rgba(234, 236, 235, .6);
+    width: 100%;
+    height: 100%;
+    pointer-events: fill;
+    cursor: move;
+}
+
+circle {
+    /* fill-opacity: 0.2; */
+    transition: fill-opacity 250ms linear;
+    /* transition: fill-opacity 250ms linear, r 250ms ease; */
+}
+
+text {
+    white-space: normal;
+}
+
+.node {
+    stroke: #fff;
+    stroke-width: 1.5px;
+    cursor: pointer;
+}
+
+.node .selected {
+    stroke: rgb(255, 150, 107);
+}
+
+.link {
+    stroke: #999;
+}
+
+.brush .extent {
+    fill-opacity: .1;
+    stroke: #fff;
+    shape-rendering: crispEdges;
+}
+
+.Company {
+    fill: rgb(8, 147, 228);
+    stroke: rgb(7, 117, 180);
+    stroke-width: .6px;
+}
+
+.Human {
+    fill: rgb(255, 150, 107);
+    stroke: rgb(247, 115, 62);
+    stroke-width: .6px;
+}
+
+.Company text {
+    font-size: 12px;
+    fill: #fff;
+    stroke-width: 0;
+    text-anchor: middle
+}
+
+.Human text {
+    font-size: 12px;
+    fill: #fff;
+    stroke-width: 0;
+    text-anchor: middle
+}
+
+.link .SERVE {
+    fill: rgb(106, 220, 254);
+    stroke: rgb(106, 220, 254);
+    stroke-width: 2px;
+}
+
+.link .INVEST_C {
+    fill: rgb(141, 149, 250);
+    stroke: rgb(141, 149, 250);
+    stroke-width: 2px;
+}
+
+.link .OWN {
+    fill: rgb(249, 225, 105);
+    stroke: rgb(249, 225, 105);
+    stroke-width: 2px;
+}
+
+.link .TELPHONE {
+    fill: rgb(1, 194, 106);
+    stroke:rgb(1, 194, 106);
+    stroke-width: 2px;
+}
+
+.link text {
+    font-size: 14px;
+    fill: rgb(0, 0, 0);
+    stroke-width: 0;
+    text-anchor: middle
+}
+
+#TELPHONE {
+    fill: rgb(1, 194, 106);
+}
+
+#SERVE {
+    fill:rgb(106, 220, 254);
+}
+
+#INVEST_C {
+    fill: rgb(141, 149, 250);
+}
+
+#OWN {
+    fill: rgb(249, 225, 105);
+}
+
+.flow {
+    fill: rgb(141, 149, 250);
+    stroke-width: 0;
+}
+
+.link .filter {
+    fill: #ccc;
+    stroke: #ccc
+}
+
+.node.filter circle {
+    fill: #ccc;
+    stroke: #ccc;
+}
+
+#relation {
+    top: 0;
+    left: 0;
+    right: 0;
+    bottom: 0;
+    height: 100%;
+    width: 100%;
+    user-select: none;
+    padding-bottom: 0;
+    background-color: transparent;
+}
+
+#timeline {
+    display: flex;
+    width: 100%;
+    flex-direction: column;
+    justify-content: center;
+    align-items: center;
+    height: 120px;
+    padding-top: 6px;
+    border-top: 1px solid #ccc;
+    position: absolute;
+    bottom: 41px;
+    user-select: none;
+    /* background-color:rgba(237, 240, 239, .7); */
+    background-color:#fff;
+}
+
+.timeline-bar .axis path {
+    fill: none;
+    stroke: none;
+}
+
+.timeline-bar line {
+    stroke: black;
+}
+
+.timeline-bar .vertical-marker {
+    stroke-width: 1;
+}
+
+.timeline-bar rect,
+.timeline-bar rect.chart-bounds {
+    fill: transparent;
+}
+
+.timeline-bar rect.chart-bounds:hover,
+.timeline-bar rect.interval:hover {
+    cursor: -webkit-grab;
+    cursor: grab;
+}
+
+.timeline-bar rect.chart-bounds:active,
+.timeline-bar rect.interval:active {
+    cursor: -webkit-grabbing;
+    cursor: grabbing;
+}
+
+.timeline-bar .dot:hover {
+    cursor: pointer;
+}
+
+.timeline-bar .interval-text {
+    pointer-events: none;
+}
+
+.timeline-bar rect.interval {
+    fill: black;
+    stroke: #2b2b2b;
+}
+
+.timeline-bar .extent {
+    fill: rgb(8, 147, 228);
+    stroke: rgb(7, 117, 180);
+    fill-opacity: .25;
+    shape-rendering: crispEdges;
+}
+
+.timeline-bar i.active {
+    background-color: #ccc;
+}
+
+.timeline-legend {
+    position: absolute;
+    bottom: 141px;
+    left: 50px;
+    width: 100px;
+    height: 100px;
+    user-select: none;
+}
+
+.timeline-legend>div>i {
+    display: inline-block;
+    width: 10px;
+    height: 10px;
+    border-radius: 5px;
+}
+
+.timeline-legend>.timeline-legend-company>i {
+    background-color: rgb(8, 147, 228);
+    margin-left: 38px
+}
+
+.timeline-legend>.timeline-legend-investor>i {
+    background-color: rgb(255, 150, 107);
+    margin-left: 24px
+}
+
+.timeline-legend>.timeline-legend-flows>i {
+    background-color: rgb(141, 149, 250);
+    margin-left: 10px
+}
+
+
+/* Switch Toggle */
+
+#timelineHandle {
+    margin: 0;
+    padding: 0;
+    margin-bottom: 10px;
+}
+
+#timelineHandle .switch {
+    position: relative;
+    outline: 0;
+    display: inline-block;
+    cursor: pointer;
+    user-select: none;
+    margin: 0 10px 0 0;
+    font-size: 12px;
+    vertical-align: middle;
+}
+
+#timelineHandle .switch,
+#timelineHandle .switch:after,
+#timelineHandle .switch:before,
+#timelineHandle .switch *,
+#timelineHandle .switch *:after,
+#timelineHandle .switch *:before,
+#timelineHandle .switch+.switch-btn {
+    box-sizing: border-box;
+}
+
+#timelineHandle .switch::selection,
+#timelineHandle .switch:after::selection,
+#timelineHandle .switch:before::selection,
+#timelineHandle .switch *::selection,
+#timelineHandle .switch *:after::selection,
+#timelineHandle .switch *:before::selection,
+#timelineHandle .switch+.switch-btn::selection {
+    background: none;
+}
+
+#timelineHandle .switch span {
+    position: relative;
+    display: block;
+    height: 1.8em;
+    line-height: 1.2em;
+    overflow: hidden;
+    font-weight: normal;
+    text-align: center;
+    border-radius: 2em;
+    padding: 0.2em 1em;
+    border: 1px solid #fafafa;
+    /* box-shadow: inset 0 2px 0 rgba(0, 0, 0, 0.2), 0 2px 0 rgba(255, 255, 255, 0.7); */
+    transition: color 0.3s ease, padding 0.3s ease-in-out, background 0.3s ease-in-out;
+}
+
+#timelineHandle .switch span:before {
+    position: relative;
+    display: block;
+    line-height: 1.4em;
+    padding: 0 0.2em;
+}
+
+#timelineHandle .switch span:after {
+    position: absolute;
+    display: block;
+    content: '';
+    border-radius: 2em;
+    width: 1.3em;
+    height: 1.3em;
+    margin-left: -1.45em;
+    top: 0.2em;
+    background: #fff;
+    transition: left 0.3s cubic-bezier(0.175, 0.885, 0.32, 0.97), background 0.3s ease-in-out;
+}
+
+#timelineHandle .switch input[type="checkbox"] {
+    display: none !important;
+}
+
+#timelineHandle .switch input[type="checkbox"]:checked+span {
+    background: linear-gradient(to bottom right, rgb(62, 155, 237), rgb(79, 165, 240));
+    color: #fff;
+    padding-left: 0.4em;
+    padding-right: 1.6em;
+}
+
+#timelineHandle .switch input[type="checkbox"]:checked+span:before {
+    content: attr(data-on);
+}
+
+#timelineHandle .switch input[type="checkbox"]:checked+span:after {
+    background: #fff;
+    left: 98%;
+}
+
+#timelineHandle .switch input[type="checkbox"]:not(:checked)+span {
+    background: rgb(68, 198, 100);
+    color: #fff;
+    padding-left: 1.6em;
+    padding-right: 0.4em;
+}
+
+#timelineHandle .switch input[type="checkbox"]:not(:checked)+span:before {
+    content: attr(data-off);
+    color: #fff;
+}
+
+#timelineHandle .switch input[type="checkbox"]:not(:checked)+span:after {
+    background: #fff;
+    left: 1.7em;
+}
+
+
+/* Clear Button */
+
+#timelineHandle .button-clear {
+    display: inline-block;
+    position: relative;
+    vertical-align: middle;
+    padding: 0 10px;
+    text-align: center;
+    text-decoration: none;
+    text-shadow: 1px 1px 1px rgba(255, 255, 255, .22);
+    font-family: Arial, sans-serif;
+    font-weight: 500;
+    font-size: 12px;
+    line-height: 20px;
+    border-radius: 10px;
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, .29), inset 1px 1px 1px rgba(255, 255, 255, .44);
+    transition: all 0.15s ease;
+}
+
+#timelineHandle .button-clear:hover {
+    box-shadow: 1px 1px 1px rgba(0, 0, 0, .29), inset 0px 0px 2px rgba(0, 0, 0, .5);
+}
+
+#timelineHandle .button-clear:active {
+    box-shadow: inset 0px 0px 3px rgba(0, 0, 0, .8);
+}
+
+#timelineHandle .green-clear {
+    color: #fff;
+    background: linear-gradient(to bottom right, rgb(62, 155, 237), rgb(79, 165, 240));
+}
+
+#timelineHandle .button-clear .icon-clear:before {
+    font-size: 12px;
+}
+
+/* loading  animation */
+
+#timeline-mask {
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    position: absolute;
+    top: 0%;
+    left: 0%;
+    width: 100%;
+    height: 100%;
+    background-color: rgba(180, 180, 180, .2);
+    z-index: 999;
+    filter: alpha(opacity=60);
+}
+
+.loader {
+    box-sizing: border-box;
+    display: flex;
+    flex: 0 1 auto;
+    flex-direction: column;
+    flex-grow: 1;
+    flex-shrink: 0;
+    flex-basis: 25%;
+    max-width: 25%;
+    height: 150px;
+    align-items: center;
+    justify-content: center;
+    transform: scale(0.6);
+}
+
+#timeline-mask .loader {
+    margin-top: -68px;
+}
+
+@keyframes loading-anim {
+    50% {
+        transform: scale(0.3);
+        opacity: 0.3;
+    }
+    100% {
+        transform: scale(1);
+        opacity: 1;
+    }
+}
+
+.loading-anim {
+    position: relative;
+}
+
+.loading-anim i {
+    display: block;
+    width: 13px;
+    height: 13px;
+    border-radius: 50%;
+    background-color: #333;
+    position: absolute;
+}
+
+.loading-anim i:nth-child(1) {
+    top: 25px;
+    left: 0;
+    animation: loading-anim 2s ease 0s infinite;
+}
+
+.loading-anim i:nth-child(2) {
+    top: 17px;
+    left: 17px;
+    animation: loading-anim 2s ease -0.25s infinite;
+}
+
+.loading-anim i:nth-child(3) {
+    top: 0;
+    left: 25px;
+    animation: loading-anim 2s ease -0.50s infinite;
+}
+
+.loading-anim i:nth-child(4) {
+    top: -17px;
+    left: 17px;
+    animation: loading-anim 2s ease -0.75s infinite;
+}
+
+.loading-anim i:nth-child(5) {
+    top: -25px;
+    left: 0;
+    animation: loading-anim 2s ease -1.00s infinite;
+}
+
+.loading-anim i:nth-child(6) {
+    top: -17px;
+    left: -17px;
+    animation: loading-anim 2s ease -1.25s infinite;
+}
+
+.loading-anim i:nth-child(7) {
+    top: 0;
+    left: -25px;
+    animation: loading-anim 2s ease -1.50s infinite;
+}
+
+.loading-anim i:nth-child(8) {
+    top: 17px;
+    left: -17px;
+    animation: loading-anim 2s ease -1.75s infinite;
+}
+
+.hidden {
+    display: none;
+}
+
+.visible {
+    display: block;
+}

@@ -159,8 +159,9 @@ function initCanvas(companyId) {
      */
     function renderFroce(graph) {
         // 生成力学图数据
-        var {nodes_data, edges_data} = genForeData(graph);
-        console.log('更新前：', nodes_data);
+        var { nodes_data, edges_data } = genForeData(graph);
+        console.log('更新前_nodes：', nodes_data);
+        console.log('更新前_edges：', edges_data);
 
         // 绑定力学图数据
         force
@@ -275,24 +276,39 @@ function initCanvas(companyId) {
      * 更新关系图
      * @param {Object} graph   
      */
-    function update(graph) {
+    function update(graph, ids) {
 
         // // --> 1. 更新时间轴工具条
         // renderBar(graph);
 
         // --> 2. 更新时间关系图
         // 更新力学图数据
-        var {nodes_data, edges_data} = genForeData(graph);
-        console.log('更新后：', nodes_data);
-        
+        var { nodes_data, edges_data } = genForeData(graph);
+        console.log('更新后_nodes：', nodes_data);
+        console.log('更新后_edges：', edges_data);
         // 更新关系（连线）
-        links = links.data(edges_data);
-        links.exit().remove();
-
+        // links = links.data(edges_data);
+        links[0].forEach((d, i) => {
+            for (let i = 0; i < ids.length; i++) {
+                if (d.__data__.source.id == ids[i] || d.__data__.target.id == ids[i]) {
+                    d.remove();
+                }
+            }
+        })
+        // links.exit().remove();
+        // console.log(links);
         // 更新主体（节点）
-        nodes = nodes.data(nodes_data);
-        nodes.exit().remove();
+        // nodes = nodes.data(nodes_data);
+        // nodes.exit().remove();
+        // console.log(nodes);
 
+        nodes[0].forEach((d, i) => {
+            for (let i = 0; i < ids.length; i++) {
+                if (d.__data__.id == ids[i]) {
+                    d.remove();
+                }
+            }
+        })
         // 开启力学计算
         force.start();
     }
@@ -633,7 +649,7 @@ function initCanvas(companyId) {
         // });
 
         // 更新画图数据
-        update(graph);
+        update(graph, ids);
     }
 
     // 刷新节点间关系

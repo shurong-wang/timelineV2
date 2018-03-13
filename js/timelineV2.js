@@ -176,7 +176,7 @@ function initCanvas(companyId) {
 
         // 关系分组
         links = links
-            .data(edges_data)
+            .data(edges_data,(d)=>d.source.id + '-' + d.target.id )
             .enter().append('g')
             .attr('class', 'link')
             .each(function (link) {
@@ -210,7 +210,7 @@ function initCanvas(companyId) {
 
         // 节点分组
         nodes = nodes
-            .data(nodes_data)
+            .data(nodes_data,(d)=>d.id)
             .enter().append('g')
             .attr('class', 'node')
             .each(function (d) {
@@ -287,28 +287,14 @@ function initCanvas(companyId) {
         console.log('更新后_nodes：', nodes_data);
         console.log('更新后_edges：', edges_data);
         // 更新关系（连线）
-        // links = links.data(edges_data);
-        links[0].forEach((d, i) => {
-            for (let i = 0; i < ids.length; i++) {
-                if (d.__data__.source.id == ids[i] || d.__data__.target.id == ids[i]) {
-                    d.remove();
-                }
-            }
-        })
-        // links.exit().remove();
-        // console.log(links);
+        links = links.data(edges_data,(d)=>d.source.id + '-' + d.target.id );
+        links.exit().remove();
+        console.log(links);
         // 更新主体（节点）
-        // nodes = nodes.data(nodes_data);
-        // nodes.exit().remove();
-        // console.log(nodes);
+        nodes = nodes.data(nodes_data,(d)=>d.id);
+        nodes.exit().remove();
+        console.log(nodes);
 
-        nodes[0].forEach((d, i) => {
-            for (let i = 0; i < ids.length; i++) {
-                if (d.__data__.id == ids[i]) {
-                    d.remove();
-                }
-            }
-        })
         // 开启力学计算
         force.start();
     }

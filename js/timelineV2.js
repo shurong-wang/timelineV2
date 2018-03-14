@@ -22,8 +22,8 @@ function initCanvas(companyId) {
     // var url = api('getTimeLine', {
     //     companyId: companyId
     // });
-    // var url = './data/timelineV2.json';
-    var url = './data/timelineV2.sample.json';
+    // var url = './data/relations.final.json';
+    var url = './data/relations.init.json';
 
     var isDraging = false;
     var isHoverNode = false;
@@ -292,7 +292,7 @@ function initCanvas(companyId) {
         // 更新关系（连线）
         links = links.data(edges_data, d => d.source.id + '-' + d.target.id);
         links.exit().remove();
-    
+
         // 更新主体（节点）
         nodes = nodes.data(nodes_data, d => d.id);
         nodes.exit().remove();
@@ -306,16 +306,18 @@ function initCanvas(companyId) {
      * @param {Object} graph 
      */
     function genForeData(graph) {
-        var nodesMap = graph.nodes.reduce(function (map, node) {
+
+        const nodesMap = graph.nodes.reduce(function (map, node) {
             map[node.id] = node;
             return map;
         }, {});
 
-        var relsMap = graph.relations.reduce(function (map, rel) {
-            var k = [rel.startNode, rel.endNode];
+        const relsMap = graph.relations.reduce(function (map, rel) {
+            const k = [rel.startNode, rel.endNode];
             if (!map[k]) {
                 map[k] = {
-                    relation: []
+                    relation: [],
+                    raw: [] // 仅用作构造 mock 数据，后期删除
                 };
             };
             map[k].relation.push({
@@ -325,18 +327,32 @@ function initCanvas(companyId) {
                 amout: rel.amout,
                 starDate: rel.starDate
             });
+            map[k].raw.push(rel); // 仅用作构造 mock 数据，后期删除
             return map;
         }, {});
 
-        nodes_data = graph.nodes;
-        edges_data = Object.keys(relsMap).map(function (k) {
-            var [startNode, endNode] = k.split(',');
-            return {
-                source: nodesMap[startNode],
-                target: nodesMap[endNode],
-                relation: relsMap[k].relation
+        // 节点去重
+        nodes_data = Object.values(nodesMap).map(v => v);
+
+        const mockRels = []; // 仅用作构造 mock 数据，后期删除
+
+        // 关系过滤
+        edges_data = Object.entries(relsMap).reduce(function (init, [k, v]) {
+            const [startNode, endNode] = k.split(',');
+            if (nodesMap[startNode] && nodesMap[endNode]) {
+
+                mockRels.push(...relsMap[k].raw); // 仅用作构造 mock 数据，后期删除
+
+                init.push({
+                    source: nodesMap[startNode],
+                    target: nodesMap[endNode],
+                    relation: relsMap[k].relation
+                });
             }
-        });
+            return init;
+        }, []);
+
+        // console.log(JSON.stringify(mockRels)); // 仅用作构造 mock 数据，后期删除
 
         return { nodes_data, edges_data };
     }

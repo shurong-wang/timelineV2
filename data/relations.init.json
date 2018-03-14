@@ -1,0 +1,73 @@
+{
+    "nodes": [
+        {
+            "id": 372950,
+            "name": "河北信息产业股份有限公司",
+            "ntype": "Company"
+        },
+        {
+            "id": 94694333,
+            "name": "河北华为通信技术有限责任公司",
+            "ntype": "Company"
+        },
+        {
+            "id": 94694335,
+            "name": "河北省电话设备厂",
+            "ntype": "Company"
+        },
+        {
+            "id": 1000054620,
+            "name": "张凯",
+            "ntype": "Human"
+        },
+        {
+            "id": 1000055424,
+            "name": "李虹",
+            "ntype": "Human"
+        }
+    ],
+    "relations": [
+        {
+            "id": 10000000003,
+            "startNode": 94694335,
+            "endNode": 94694333,
+            "label": "投资",
+            "starDate": "2011-09-15",
+            "type": "INVEST_C",
+            "amout": 500000
+        },
+        {
+            "id": 10000000004,
+            "startNode": 372950,
+            "endNode": 94694333,
+            "label": "投资",
+            "starDate": "2012-06-18",
+            "type": "INVEST_C",
+            "amout": 500000
+        },
+        {
+            "id": 10000000010,
+            "startNode": 1000054620,
+            "endNode": 372950,
+            "label": "总经理",
+            "starDate": "2011-05-13",
+            "type": "SERVE"
+        },
+        {
+            "id": 10000000022,
+            "startNode": 1000054620,
+            "endNode": 372950,
+            "label": "董事",
+            "starDate": "2010-09-22",
+            "type": "SERVE"
+        },
+        {
+            "id": 10000000014,
+            "startNode": 1000055424,
+            "endNode": 372950,
+            "label": "董事",
+            "starDate": "2012-05-13",
+            "type": "SERVE"
+        }
+    ]
+}

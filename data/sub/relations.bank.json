@@ -181,15 +181,6 @@
             "amout": 50000
         },
         {
-            "id": 10000000002,
-            "startNode": 94694336,
-            "endNode": 94694333,
-            "label": "投资",
-            "starDate": "2016-06-13",
-            "type": "INVEST_C",
-            "amout": 50
-        },
-        {
             "id": 10000000003,
             "startNode": 94694335,
             "endNode": 94694333,
@@ -206,15 +197,6 @@
             "starDate": "2012-06-18",
             "type": "INVEST_C",
             "amout": 500000
-        },
-        {
-            "id": 10000000005,
-            "startNode": 94694336,
-            "endNode": 116035781,
-            "label": "投资",
-            "starDate": "2008-04-13",
-            "type": "INVEST_C",
-            "amout": 5000000
         },
         {
             "id": 10000000006,

@@ -1,5 +1,6 @@
 {
-    "nodes": [{
+    "nodes": [
+        {
             "id": 372950,
             "name": "河北信息产业股份有限公司",
             "ntype": "Company"
@@ -30,7 +31,8 @@
             "ntype": "Human"
         }
     ],
-    "relations": [{
+    "relations": [
+        {
             "id": 10000000007,
             "startNode": 1000572142,
             "endNode": 372950,

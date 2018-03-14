@@ -176,12 +176,14 @@ function initCanvas(companyId) {
 
         // 关系分组
         links = links
-            .data(edges_data,(d)=>d.source.id + '-' + d.target.id )
+            .data(edges_data, d => d.source.id + '-' + d.target.id)
             .enter().append('g')
             .attr('class', 'link')
             .each(function (link) {
                 var lineG = d3.select(this);
-                var lineEnter = lineG.selectAll('line').data(link.relation).enter();
+                var lineEnter = lineG.selectAll('line')
+                    .data(link.relation, d => d.id)
+                    .enter();
 
                 // 关系连线
                 rLine = lineEnter.append('line')
@@ -210,9 +212,10 @@ function initCanvas(companyId) {
 
         // 节点分组
         nodes = nodes
-            .data(nodes_data,(d)=>d.id)
+            .data(nodes_data, d => d.id)
             .enter().append('g')
             .attr('class', 'node')
+            // .style('fill-opacity', .3)
             .each(function (d) {
                 var nodesG = d3.select(this);
                 nodesG.classed(d.ntype, true);
@@ -287,13 +290,12 @@ function initCanvas(companyId) {
         console.log('更新后_nodes：', nodes_data);
         console.log('更新后_edges：', edges_data);
         // 更新关系（连线）
-        links = links.data(edges_data,(d)=>d.source.id + '-' + d.target.id );
+        links = links.data(edges_data, d => d.source.id + '-' + d.target.id);
         links.exit().remove();
-        console.log(links);
+    
         // 更新主体（节点）
-        nodes = nodes.data(nodes_data,(d)=>d.id);
+        nodes = nodes.data(nodes_data, d => d.id);
         nodes.exit().remove();
-        console.log(nodes);
 
         // 开启力学计算
         force.start();
@@ -315,14 +317,14 @@ function initCanvas(companyId) {
                 map[k] = {
                     relation: []
                 };
-                map[k].relation.push({
-                    type: rel.type,
-                    id: rel.id,
-                    label: rel.label,
-                    amout: rel.amout,
-                    starDate: rel.starDate
-                });
-            }
+            };
+            map[k].relation.push({
+                type: rel.type,
+                id: rel.id,
+                label: rel.label,
+                amout: rel.amout,
+                starDate: rel.starDate
+            });
             return map;
         }, {});
 
@@ -707,26 +709,32 @@ function initCanvas(companyId) {
             var lineG = d3.select(this);
 
             var {
-                source: { x: sx, y: sy, r: sr },
-                target: { x: tx, y: ty, r: tr },
+                source: {
+                    x: sx,
+                    y: sy,
+                    r: sr
+                },
+                target: {
+                    x: tx,
+                    y: ty,
+                    r: tr
+                },
                 relation,
             } = link;
             var count = relation.length; // 连线条数
 
-            var index = 0;
-            var path = {};
-
             //关系连线
-            lineG.selectAll('line').each(function () {
-                index++;
-                path = getLinePath(sx, sy, tx, ty, sr, index, count);
+            lineG.selectAll('line').each(function (d, i) {
+                var path = getLinePath(sx, sy, tx, ty, sr, i, count);
                 // 设置连线路径 x1, y1, x2, y2
                 d3.select(this).attr(path);
+                // 挂载连线路径 x1, y1, x2, y2 到 line 上
+                Object.assign(d, path);
             });
 
             // 关系文字
             lineG.selectAll('text').attr('transform', function (d) {
-                var { x1, y1, x2, y2 } = path;
+                var { x1, y1, x2, y2 } = d;
                 var textX = x1 + (x2 - x1) / 2;
                 var textY = y1 + (y2 - y1) / 2;
                 var textAngle = getAngle(x1, y1, x2, y2);
@@ -802,11 +810,11 @@ function initCanvas(companyId) {
      * @param {number} index 连线索引
      * @param {number} count 连线条数
      */
-    function getLinePath(sx, sy, tx, ty, r, index, count) {
+    function getLinePath(sx, sy, tx, ty, r, i, count) {
 
         var b1 = tx - sx; // 邻边
         var b2 = ty - sy; // 对边
-        var b3 = Math.sqrt(b1 * b1 + b2 * b2);  // 斜边
+        var b3 = Math.sqrt(b1 * b1 + b2 * b2); // 斜边
         var angle = 180 * Math.asin(b1 / b3) / Math.PI;
         var isY = b2 < 0;
 
@@ -821,7 +829,7 @@ function initCanvas(companyId) {
         var minStart = count === 1 ? 0 : -r / 2 + padding;
         var start = minStart * (count / maxCount); // 连线线开始位置
         var space = count === 1 ? 0 : Math.abs(minStart * 2 / (maxCount - 1)); // 连线间隔
-        var position = start + space * index; // 生成 20 0 -20 的 position 模式
+        var position = start + space * i; // 生成 20 0 -20 的 position 模式
 
         if (position > r) {
             return;

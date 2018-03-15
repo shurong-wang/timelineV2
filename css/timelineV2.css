@@ -114,13 +114,13 @@ circle {
 }
 
 .node .n-circle{
-    stroke: #fff;
-    stroke-width: 1.5px;
+    stroke-width: 1px;
+    stroke: rgba(255, 255, 255, .3);
     cursor: pointer;
 }
 
 .node .n-circle.curr {
-    stroke: rgb(255, 0, 119);
+    stroke: rgba(255, 0, 119, .6);
 }
 
 .node.filter circle {

@@ -36,7 +36,6 @@ function initCanvas(companyId) {
     var isHoverNode = false;
     var isHoverLine = false;
     var isBrushing = false;
-    var padding = -10;
     var flowAnim = new FlowAnim();
 
     var width = d3.select('#relation').node().clientWidth;
@@ -222,7 +221,7 @@ function initCanvas(companyId) {
             .data(nodes_data, d => d.id)
             .enter().append('g')
             .attr('class', 'node')
-            // .style('fill-opacity', .3)
+            // .style('fill-opacity', .2)
             .each(function (d) {
                 var nodesG = d3.select(this);
                 nodesG.classed(d.ntype, true);
@@ -806,7 +805,7 @@ function initCanvas(companyId) {
 
             //关系连线
             lineG.selectAll('line').each(function (d, i) {
-                var path = getLinePath(sx, sy, tx, ty, sr, i, count);
+                var path = getLinePath(sx, sy, tx, ty, sr, tr, i, count);
                 // 设置连线路径 x1, y1, x2, y2
                 d3.select(this).attr(path);
                 // 挂载连线路径 x1, y1, x2, y2 到 line 上
@@ -891,48 +890,56 @@ function initCanvas(companyId) {
      * @param {number} index 连线索引
      * @param {number} count 连线条数
      */
-    function getLinePath(sx, sy, tx, ty, r, i, count) {
+    function getLinePath(sx, sy, tx, ty, sr, tr, i, count) {
 
-        var b1 = tx - sx; // 邻边
-        var b2 = ty - sy; // 对边
-        var b3 = Math.sqrt(b1 * b1 + b2 * b2); // 斜边
-        var angle = 180 * Math.asin(b1 / b3) / Math.PI;
-        var isY = b2 < 0;
+        var getXY = r => {
+            var b1 = tx - sx; // 邻边
+            var b2 = ty - sy; // 对边
+            var b3 = Math.sqrt(b1 * b1 + b2 * b2); // 斜边
+            var angle = 180 * Math.asin(b1 / b3) / Math.PI;
+            var isY = b2 < 0;
+            var a = Math.cos(angle * Math.PI / 180) * r;
+            var b = Math.sin(angle * Math.PI / 180) * r;
+            var sourceX = sx + b;
+            var sourceY = isY ? sy - a : sy + a;
+            var targetX = tx - b;
+            var targetY = isY ? ty + a : ty - a;
 
-        var a = Math.cos(angle * Math.PI / 180) * r;
-        var b = Math.sin(angle * Math.PI / 180) * r;
-        var sourceX = sx + b;
-        var targetX = tx - b;
-        var sourceY = isY ? sy - a : sy + a;
-        var targetY = isY ? ty + a : ty - a;
+            var padding = -10; // 控制边距，取值范围是 0 到 r/2。把圆理解为一个盒子，平行线是装在盒子里
+            var maxCount = 4; // 最大连线数
+            var minStart = count === 1 ? 0 : -r / 2 + padding;
+            var start = minStart * (count / maxCount); // 连线线开始位置
+            var space = count === 1 ? 0 : Math.abs(minStart * 2 / (maxCount - 1)); // 连线间隔
+            var position = start + space * i; // 生成 20 0 -20 的 position 模式
 
-        var maxCount = 4; // 最大连线数
-        var minStart = count === 1 ? 0 : -r / 2 + padding;
-        var start = minStart * (count / maxCount); // 连线线开始位置
-        var space = count === 1 ? 0 : Math.abs(minStart * 2 / (maxCount - 1)); // 连线间隔
-        var position = start + space * i; // 生成 20 0 -20 的 position 模式
+            if (position > r) {
+                return;
+            }
 
-        if (position > r) {
-            return;
+            // s 两次三角函数计算的值
+            var s = r - Math.sin(180 * Math.acos(position / r) / Math.PI * Math.PI / 180) * r;
+
+            // _a 和 _b 是拿到 ang 角度的基准值
+            var _a = Math.cos(angle * Math.PI / 180);
+            var _b = Math.sin(angle * Math.PI / 180);
+
+            // a 和 b 是得到垂直于原点平行 position 长度的偏移量。 两个偏移量按照下面的逻辑相加就是平行线的位置
+            var a = _a * position;
+            var b = _b * position;
+            var rx = _b * s;
+            var ry = _a * s;
+
+            var x1 = (isY ? sourceX + a : sourceX - a) - rx;
+            var y1 = (isY ? sourceY + ry : sourceY - ry) + b;
+
+            var x2 = (isY ? targetX + a : targetX - a) + rx;
+            var y2 = (isY ? targetY - ry : targetY + ry) + b;
+
+            return { x1, y1, x2, y2 };
         }
 
-        // s 两次三角函数计算的值
-        var s = r - Math.sin(180 * Math.acos(position / r) / Math.PI * Math.PI / 180) * r;
-
-        // _a 和 _b 是拿到 ang 角度的基准值
-        var _a = Math.cos(angle * Math.PI / 180);
-        var _b = Math.sin(angle * Math.PI / 180);
-
-        // a 和 b 是得到垂直于原点平行 position 长度的偏移量。 两个偏移量按照下面的逻辑相加就是平行线的位置
-        var a = _a * position;
-        var b = _b * position;
-        var rx = _b * s;
-        var ry = _a * s;
-
-        var x1 = (isY ? sourceX + a : sourceX - a) - rx;
-        var y1 = (isY ? sourceY + ry : sourceY - ry) + b;
-        var x2 = (isY ? targetX + a : targetX - a) + rx;
-        var y2 = (isY ? targetY - ry : targetY + ry) + b;
+        var { x1, y1 } = getXY(sr);
+        var { x2, y2 } = getXY(tr);
 
         return { x1, y1, x2, y2 };
     }

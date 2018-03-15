@@ -24,24 +24,6 @@ circle {
     /* transition: fill-opacity 250ms linear, r 250ms ease; */
 }
 
-text {
-    white-space: normal;
-}
-
-.node {
-    stroke: #fff;
-    stroke-width: 1.5px;
-    cursor: pointer;
-}
-
-.node .selected {
-    stroke: rgb(255, 150, 107);
-}
-
-.link {
-    stroke: #999;
-}
-
 .brush .extent {
     fill-opacity: .1;
     stroke: #fff;
@@ -94,7 +76,7 @@ text {
 
 .link .TELPHONE {
     fill: rgb(1, 194, 106);
-    stroke:rgb(1, 194, 106);
+    stroke: rgb(1, 194, 106);
     stroke-width: 2px;
 }
 
@@ -110,7 +92,7 @@ text {
 }
 
 #SERVE {
-    fill:rgb(106, 220, 254);
+    fill: rgb(106, 220, 254);
 }
 
 #INVEST_C {
@@ -129,6 +111,16 @@ text {
 .link .filter {
     fill: #ccc;
     stroke: #ccc
+}
+
+.node .n-circle{
+    stroke: #fff;
+    stroke-width: 1.5px;
+    cursor: pointer;
+}
+
+.node .n-circle.curr {
+    stroke: rgb(255, 0, 119);
 }
 
 .node.filter circle {
@@ -161,7 +153,7 @@ text {
     bottom: 41px;
     user-select: none;
     /* background-color:rgba(237, 240, 239, .7); */
-    background-color:#fff;
+    background-color: #fff;
 }
 
 .timeline-bar .axis path {
@@ -397,6 +389,7 @@ text {
 #timelineHandle .button-clear .icon-clear:before {
     font-size: 12px;
 }
+
 
 /* loading  animation */
 

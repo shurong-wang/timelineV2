@@ -6,19 +6,14 @@
             "ntype": "Company"
         },
         {
-            "id": 1000572142,
-            "name": "陈朝",
-            "ntype": "Human"
-        },
-        {
             "id": 94694333,
             "name": "河北华为通信技术有限责任公司",
             "ntype": "Company"
         },
         {
-            "id": 1000687991,
-            "name": "李国贤",
-            "ntype": "Human"
+            "id": 116035781,
+            "name": "深圳华远电信有限公司",
+            "ntype": "Company"
         },
         {
             "id": 94694335,
@@ -36,13 +31,18 @@
             "ntype": "Company"
         },
         {
-            "id": 116035781,
-            "name": "深圳华远电信有限公司",
-            "ntype": "Company"
+            "id": 1000572142,
+            "name": "陈朝",
+            "ntype": "Human"
         },
         {
             "id": 1000054620,
             "name": "张凯",
+            "ntype": "Human"
+        },
+        {
+            "id": 1000687991,
+            "name": "李国贤",
             "ntype": "Human"
         },
         {
@@ -183,7 +183,7 @@
         {
             "id": 10000000003,
             "startNode": 94694335,
-            "endNode": 94694333,
+            "endNode": 372950,
             "label": "投资",
             "starDate": "2011-09-15",
             "type": "INVEST_C",
@@ -262,6 +262,30 @@
             "label": "董事",
             "starDate": "2016-05-13",
             "type": "SERVE"
+        },
+        {
+            "id": 11000000010,
+            "startNode": 1000054620,
+            "endNode": 94694333,
+            "label": "总经理",
+            "starDate": "2016-05-13",
+            "type": "SERVE"
+        },
+        {
+            "id": 11000000022,
+            "startNode": 1000054620,
+            "endNode": 94694333,
+            "label": "董事",
+            "starDate": "2017-09-22",
+            "type": "SERVE"
+        },
+        {
+            "id": 11000000008,
+            "startNode": 1000054620,
+            "endNode": 94694333,
+            "label": "法人",
+            "starDate": "2015-07-22",
+            "type": "OWN"
         },
         {
             "id": 10000000014,

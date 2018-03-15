@@ -18,12 +18,19 @@ var timeLineCache = new Map();
 function initCanvas(companyId) {
     toggleMask(true);
 
+    companyId = 372950; // 河北信息产业股份有限公司
+
     // var url = '../js/config/data/timeline.json';
     // var url = api('getTimeLine', {
     //     companyId: companyId
     // });
+
     // var url = './data/relations.final.json';
     var url = './data/relations.init.json';
+
+    // var url = './data/sub/relatison.contact.json';
+    // var url = './data/sub/relations.busine.json';
+    // var url = './data/sub/relations.bank.json';
 
     var isDraging = false;
     var isHoverNode = false;
@@ -160,8 +167,8 @@ function initCanvas(companyId) {
     function renderFroce(graph) {
         // 生成力学图数据
         var { nodes_data, edges_data } = genForeData(graph);
-        console.log('更新前_nodes：', nodes_data);
-        console.log('更新前_edges：', edges_data);
+        // console.log('更新前_nodes：', nodes_data);
+        // console.log('更新前_edges：', edges_data);
 
         // 绑定力学图数据
         force
@@ -226,7 +233,8 @@ function initCanvas(companyId) {
                 // 节点圆形
                 nCircle = nodesG.append('circle')
                     .attr('class', 'n-circle')
-                    .attr(circleStyle[d.ntype]);
+                    .attr(circleStyle[d.ntype])
+                    .classed('curr', d => d.id === companyId);
 
                 // 节点文字
                 nText = nodesG.append('text')
@@ -287,8 +295,9 @@ function initCanvas(companyId) {
         // --> 2. 更新时间关系图
         // 更新力学图数据
         var { nodes_data, edges_data } = genForeData(graph);
-        console.log('更新后_nodes：', nodes_data);
-        console.log('更新后_edges：', edges_data);
+        // console.log('更新后_nodes：', nodes_data);
+        // console.log('更新后_edges：', edges_data);
+
         // 更新关系（连线）
         links = links.data(edges_data, d => d.source.id + '-' + d.target.id);
         links.exit().remove();
@@ -307,55 +316,111 @@ function initCanvas(companyId) {
      */
     function genForeData(graph) {
 
-        const nodesMap = graph.nodes.reduce(function (map, node) {
-            map[node.id] = node;
+        const nodesMap = graph.nodes.reduce(function (map, curr) {
+            if (!map[curr.id]) {
+                map[curr.id] = curr;
+            }
             return map;
         }, {});
 
-        const relsMap = graph.relations.reduce(function (map, rel) {
-            const k = [rel.startNode, rel.endNode];
-            if (!map[k]) {
-                map[k] = {
-                    relation: [],
-                    raw: [] // 仅用作构造 mock 数据，后期删除
+        const relsMap = graph.relations.reduce(function (map, curr) {
+            const { startNode, endNode } = curr;
+            const k = [startNode, endNode];
+            if (nodesMap[startNode] && nodesMap[endNode]) {
+                if (!map[k]) {
+                    map[k] = {
+                        relation: []
+                    };
                 };
-            };
-            map[k].relation.push({
-                type: rel.type,
-                id: rel.id,
-                label: rel.label,
-                amout: rel.amout,
-                starDate: rel.starDate
-            });
-            map[k].raw.push(rel); // 仅用作构造 mock 数据，后期删除
+                map[k].relation.push(curr);
+            }
             return map;
         }, {});
+
+        // 提取可用关系（过滤掉起始节点或目标节点缺失的关系）
+        const useableRels = Object.values(relsMap).reduce(function (rels, { relation }) {
+            return [...rels, ...relation];
+        }, []);
 
         // 节点去重
-        nodes_data = Object.values(nodesMap).map(v => v);
-
-        const mockRels = []; // 仅用作构造 mock 数据，后期删除
+        nodes_data = [...Object.values(nodesMap)];
 
         // 关系过滤
-        edges_data = Object.entries(relsMap).reduce(function (init, [k, v]) {
+        edges_data = Object.entries(relsMap).reduce(function (edges, [k, v]) {
             const [startNode, endNode] = k.split(',');
             if (nodesMap[startNode] && nodesMap[endNode]) {
-
-                mockRels.push(...relsMap[k].raw); // 仅用作构造 mock 数据，后期删除
-
-                init.push({
+                edges.push({
                     source: nodesMap[startNode],
                     target: nodesMap[endNode],
                     relation: relsMap[k].relation
                 });
             }
-            return init;
+            return edges;
         }, []);
 
-        // console.log(JSON.stringify(mockRels)); // 仅用作构造 mock 数据，后期删除
+        // getDirectRels(0, useableRels, nodesMap);
+        // getRelationsByType([], useableRels, nodesMap);
 
         return { nodes_data, edges_data };
     }
+
+    // 获取节点的直接关系
+    function getDirectRels(currNode, useableRels, nodesMap) {
+        // 获取节点的直接关系
+        // currNode = 372950; // 河北信息产业股份有限公司
+        // currNode = 94694333; // 河北华为通信技术有限责任公司
+        currNode = 116035781; // 深圳华远电信有限公司
+
+        const uniqueMap = new Map();
+        const directRels = useableRels.reduce(function (rels, curr) {
+            const { relations, nodes } = rels;
+            const { startNode, endNode } = curr;
+            if (startNode === currNode || endNode === currNode) {
+                relations.push(curr);
+                if (!uniqueMap.has(startNode) /*&& (startNode !== currNode)*/) {
+                    nodes.push(nodesMap[startNode]);
+                    uniqueMap.set(startNode, 1);
+                }
+                if (!uniqueMap.has(endNode) /*&& (endNode !== currNode)*/) {
+                    nodes.push(nodesMap[endNode]);
+                    uniqueMap.set(endNode, 1);
+                }
+            }
+            return rels;
+        }, { relations: [], nodes: [] });
+
+        console.log(JSON.stringify(directRels));
+
+        return directRels;
+    }
+
+    // 获取指定类型的关系
+    function getRelationsByType(rType, useableRels, nodesMap) {
+        rType = ['INVEST_C'];
+        const uniqueMap = new Map();
+        const typeRels = useableRels.reduce(function (rels, curr) {
+            const { relations, nodes } = rels;
+            const { startNode, endNode, type } = curr;
+            if (rType.includes(type)) {
+                relations.push(curr);
+                if (!uniqueMap.has(startNode) /*&& (startNode !== currNode)*/) {
+                    nodes.push(nodesMap[startNode]);
+                    uniqueMap.set(startNode, 1);
+                }
+                if (!uniqueMap.has(endNode) /*&& (endNode !== currNode)*/) {
+                    nodes.push(nodesMap[endNode]);
+                    uniqueMap.set(endNode, 1);
+                }
+            }
+            return rels;
+        }, { relations: [], nodes: [] });
+
+        console.log(JSON.stringify(typeRels));
+
+        return typeRels;
+    }
+
+
 
     /**
      * 绘制时间轴工具条

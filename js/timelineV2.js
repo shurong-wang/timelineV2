@@ -113,13 +113,13 @@ function initCanvas(companyId) {
             markerWidth: '12',
             markerHeight: '12',
             viewBox: '0 0 12 12',
-            refX: '10',
-            refY: '6',
+            refX: '7',
+            refY: '4',
             orient: 'auto'
         })
         .attr('class', 'marker')
         .append('path')
-        .attr('d', 'M2,2 L10,6 L2,10 L6,6 L2,2');
+        .attr('d', 'M2,2 L8,4 L2,6 L3,4 L2,2');
 
     // 数据流小球比例尺
     var flowScale = d3.scale.linear().range([8, 15]);
@@ -892,7 +892,8 @@ function initCanvas(companyId) {
      */
     function getLinePath(sx, sy, tx, ty, sr, tr, i, count) {
 
-        var getXY = r => {
+        var getXY = (r, isTarget = false) => {
+            r += isTarget ? 2 : 0;
             var b1 = tx - sx; // 邻边
             var b2 = ty - sy; // 对边
             var b3 = Math.sqrt(b1 * b1 + b2 * b2); // 斜边
@@ -905,10 +906,11 @@ function initCanvas(companyId) {
             var targetX = tx - b;
             var targetY = isY ? ty + a : ty - a;
 
-            var padding = -10; // 控制边距，取值范围是 0 到 r/2。把圆理解为一个盒子，平行线是装在盒子里
+            var padding = isTarget ? -2 : -10; // 控制边距，取值范围是 0 到 r/2。把圆理解为一个盒子，平行线是装在盒子里
             var maxCount = 4; // 最大连线数
             var minStart = count === 1 ? 0 : -r / 2 + padding;
             var start = minStart * (count / maxCount); // 连线线开始位置
+            start = count === 2 ? start += 5 : start;
             var space = count === 1 ? 0 : Math.abs(minStart * 2 / (maxCount - 1)); // 连线间隔
             var position = start + space * i; // 生成 20 0 -20 的 position 模式
 
@@ -924,8 +926,8 @@ function initCanvas(companyId) {
             var _b = Math.sin(angle * Math.PI / 180);
 
             // a 和 b 是得到垂直于原点平行 position 长度的偏移量。 两个偏移量按照下面的逻辑相加就是平行线的位置
-            var a = _a * position;
-            var b = _b * position;
+            a = _a * position;
+            b = _b * position;
             var rx = _b * s;
             var ry = _a * s;
 
@@ -939,7 +941,7 @@ function initCanvas(companyId) {
         }
 
         var { x1, y1 } = getXY(sr);
-        var { x2, y2 } = getXY(tr);
+        var { x2, y2 } = getXY(tr, true);
 
         return { x1, y1, x2, y2 };
     }

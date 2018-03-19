@@ -15,8 +15,8 @@ $(function () {
         screenfull.exit();
     });
 
-    var oriWidth = $('#relation').width();
-    var oriHeight = $('#relation').height();
+    var oriWidth = $('#graph-main').width();
+    var oriHeight = $('#graph-main').height();
     $('#timeline').css("width", oriWidth);
 
     // 全屏切换
@@ -25,9 +25,9 @@ $(function () {
         if (screenfull.isFullscreen) {
             $('#fullScreen').addClass('hidden');
             $('#exitScreen').removeClass('hidden');
-            var width = $('#relation').width();
-            var height = $('#relation').height();
-            $('#relation').find('svg.svgCanvas, rect.zoom-overlay, rect.background')
+            var width = $('#graph-main').width();
+            var height = $('#graph-main').height();
+            $('#graph-main').find('svg.svgCanvas, rect.zoom-overlay, rect.background')
                 .attr("width", width)
                 .attr("height", height);
             $('#timeline').css("width", width);
@@ -35,7 +35,7 @@ $(function () {
         else {
             $('#fullScreen').removeClass('hidden');
             $('#exitScreen').addClass('hidden');
-            $('#relation').find('svg.svgCanvas, rect.zoom-overlay, rect.background')
+            $('#graph-main').find('svg.svgCanvas, rect.zoom-overlay, rect.background')
                 .attr("width", oriWidth)
                 .attr("height", oriHeight);
             $('#timeline').css("width", oriWidth);

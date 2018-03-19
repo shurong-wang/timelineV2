@@ -10,6 +10,7 @@ function clearChange() {
 }
 
 var timeLineCache = new Map();
+var updateCache = new Map();
 
 /**
  * 绘制时间轴关系图
@@ -18,7 +19,14 @@ var timeLineCache = new Map();
 function initCanvas(companyId) {
     toggleMask(true);
 
-    companyId = 372950; // 河北信息产业股份有限公司
+    // mock 数据公司 id:
+    // 372950       河北信息产业股份有限公司
+    // 94694333     河北华为通信技术有限责任公司
+    // 94694335     河北省电话设备厂
+    // 116035781    深圳华远电信有限公司
+
+    var mockIds = [372950, 94694333, 94694335, 116035781];
+    companyId = 372950;
 
     // var url = '../js/config/data/timeline.json';
     // var url = api('getTimeLine', {
@@ -38,8 +46,8 @@ function initCanvas(companyId) {
     var isBrushing = false;
     var flowAnim = new FlowAnim();
 
-    var width = d3.select('#relation').node().clientWidth;
-    var height = d3.select('#relation').node().clientHeight;
+    var width = d3.select('#graph-main').node().clientWidth;
+    var height = d3.select('#graph-main').node().clientHeight;
 
     // 节点笔刷比例尺 - 设置大于可见宽高，避免全屏后右边及下边选取不到
     var xScale = d3.scale.linear()
@@ -75,7 +83,7 @@ function initCanvas(companyId) {
         .scaleExtent([0.25, 2])
         .on('zoom', zoomFn);
 
-    var svg = d3.select('#relation').append('svg')
+    var svg = d3.select('#graph-main').append('svg')
         .attr('class', 'svgCanvas')
         .attr('width', width)
         .attr('height', height)
@@ -188,7 +196,7 @@ function initCanvas(companyId) {
             .each(function (link) {
                 var lineG = d3.select(this);
                 var lineEnter = lineG.selectAll('line')
-                    .data(link.relation, d => d.id)
+                    .data(link.lines, d => d.id)
                     .enter();
 
                 // 关系连线
@@ -288,14 +296,18 @@ function initCanvas(companyId) {
      */
     function update(graph, ids) {
 
+        if (!graph || !ids) {
+            return;
+        }
+
         // // --> 1. 更新时间轴工具条
         // renderBar(graph);
 
         // --> 2. 更新时间关系图
         // 更新力学图数据
         var { nodes_data, edges_data } = genForeData(graph);
-        // console.log('更新后_nodes：', nodes_data);
-        // console.log('更新后_edges：', edges_data);
+        console.log('更新后_nodes：', nodes_data);
+        console.log('更新后_edges：', edges_data);
 
         // 更新关系（连线）
         links = links.data(edges_data, d => d.source.id + '-' + d.target.id);
@@ -305,8 +317,111 @@ function initCanvas(companyId) {
         nodes = nodes.data(nodes_data, d => d.id);
         nodes.exit().remove();
 
+        // 添加节点（打开 /**/ 注释部分代码，选中“河北华为通信”，点击扩展按钮调试）
+        /*
+        // 关系分组
+        links.enter().append('g')
+            .attr('class', 'link')
+            .each(function (link) {
+                var lineG = d3.select(this);
+                var lineEnter = lineG.selectAll('line')
+                    .data(link.lines, d => d.id)
+                    .enter();
+
+                // 关系连线
+                rLine = lineEnter.append('line')
+                    .attr('class', 'r-line')
+                    .each(function (d) {
+                        d3.select(this)
+                            .classed(d.type, true)
+                            .attr('marker-end', 'url(#' + d.type + ')');
+                    });
+
+                // 关系文字
+                rText = lineEnter.append('text')
+                    .attr('class', 'r-text')
+                    .text(function (d) {
+                        return d.label;
+                    });
+            });
+
+        links
+            .on('mouseenter', function () {
+                isHoverLine = true;
+            })
+            .on('mouseleave', function () {
+                isHoverLine = false;
+            });
+
+        // 节点分组
+        nodes.enter()
+            .append('g')
+            .attr('class', 'node')
+            // .style('fill-opacity', .2)
+            .each(function (d) {
+                var nodesG = d3.select(this);
+                nodesG.classed(d.ntype, true);
+                d.selected = false;
+                d.previouslySelected = false;
+                d.r = circleStyle[d.ntype].r;
+
+                // 节点圆形
+                nCircle = nodesG.append('circle')
+                    .attr('class', 'n-circle')
+                    .attr(circleStyle[d.ntype])
+                    .classed('curr', d => d.id === companyId);
+
+                // 节点文字
+                nText = nodesG.append('text')
+                    .attr('class', 'n-text')
+                    .text(function (d) {
+                        var nodeText = d.name;
+                        return (nodeText.length > 6) ? nodeText.substr(0, 6) : nodeText;
+                    })
+                    .attr('transform', function () {
+                        return 'translate(' + [0, 3.5] + ')';
+                    });
+            });
+
+        nodes
+            .on('mouseenter', function (d) {
+                if (isDraging) {
+                    return;
+                }
+                isHoverNode = true;
+                if (!isBrushing) {
+                    d3.select(this).select('circle').transition().attr('r', 8 + circleStyle[d.ntype].r);
+                }
+            })
+            .on('mouseleave', function (d) {
+                if (isDraging) {
+                    return;
+                }
+                isHoverNode = false;
+                d3.select(this).select('circle').transition().attr('r', circleStyle[d.ntype].r);
+            })
+            .on('dblclick', function (d) {
+                d3.select(this).classed('fixed', d.fixed = false);
+            })
+            .call(drag);
+
+        //*/
+
+        // // 数据流小球比例尺
+        // flowScale = setFlowScale(graph);
+
+        // // 选中画布范围
+        // brushHandle(graph);
+
+        // 关闭 loading 动画
+        requestAnimationFrame(function () {
+            toggleMask(false);
+        });
+
+
         // 开启力学计算
         force.start();
+
     }
 
     /**
@@ -314,6 +429,9 @@ function initCanvas(companyId) {
      * @param {Object} graph 
      */
     function genForeData(graph) {
+        if (!graph) {
+            return { nodes_data: [], edges_data: [] };
+        }
 
         const nodesMap = graph.nodes.reduce(function (map, curr) {
             if (!map[curr.id]) {
@@ -322,23 +440,29 @@ function initCanvas(companyId) {
             return map;
         }, {});
 
+        const linesMap = {}; // 关系连线 -- 两个节点间可以有多条连线
+
         const relsMap = graph.relations.reduce(function (map, curr) {
-            const { startNode, endNode } = curr;
+            const { startNode, endNode, id } = curr;
+
             const k = [startNode, endNode];
             if (nodesMap[startNode] && nodesMap[endNode]) {
                 if (!map[k]) {
                     map[k] = {
-                        relation: []
+                        lines: []
                     };
                 };
-                map[k].relation.push(curr);
+                if (!linesMap[id]) { // 连线去重
+                    linesMap[id] = curr;
+                    map[k].lines.push(curr);
+                }
             }
             return map;
         }, {});
 
         // 提取可用关系（过滤掉起始节点或目标节点缺失的关系）
-        const useableRels = Object.values(relsMap).reduce(function (rels, { relation }) {
-            return [...rels, ...relation];
+        const useableRels = Object.values(relsMap).reduce(function (rels, { lines }) {
+            return [...rels, ...lines];
         }, []);
 
         // 节点去重
@@ -351,24 +475,25 @@ function initCanvas(companyId) {
                 edges.push({
                     source: nodesMap[startNode],
                     target: nodesMap[endNode],
-                    relation: relsMap[k].relation
+                    lines: relsMap[k].lines
                 });
             }
             return edges;
         }, []);
 
-        // getDirectRels(0, useableRels, nodesMap);
+        // getDirectRelsById(0, useableRels, nodesMap);
         // getRelationsByType([], useableRels, nodesMap);
 
         return { nodes_data, edges_data };
     }
 
     // 获取节点的直接关系
-    function getDirectRels(currNode, useableRels, nodesMap) {
+    function getDirectRelsById(currNode, useableRels, nodesMap) {
         // 获取节点的直接关系
         // currNode = 372950; // 河北信息产业股份有限公司
         // currNode = 94694333; // 河北华为通信技术有限责任公司
-        currNode = 116035781; // 深圳华远电信有限公司
+        currNode = 94694335 // 河北省电话设备厂
+        // currNode = 116035781; // 深圳华远电信有限公司
 
         const uniqueMap = new Map();
         const directRels = useableRels.reduce(function (rels, curr) {
@@ -450,16 +575,16 @@ function initCanvas(companyId) {
                 onBrush: function (startTime, endTime) {
                     if (startTime === endTime) {
                         edges_data.forEach(function (link) {
-                            link.relation.forEach(function (ln) { ln.filter = false; });
+                            link.lines.forEach(function (ln) { ln.filter = false; });
                             link.source.filter = false;
                         });
                     } else {
                         edges_data.forEach(function (link) {
-                            link.relation.forEach(function (ln) {
+                            link.lines.forEach(function (ln) {
                                 var time = new Date(ln.starDate).getTime();
                                 ln.filter = !(time > startTime && time < endTime);
                             });
-                            link.source.filter = !link.relation.filter(function (d) {
+                            link.source.filter = !link.lines.filter(function (d) {
                                 return !d.filter
                             }).length;
                         });
@@ -654,7 +779,7 @@ function initCanvas(companyId) {
                     });
 
                     // 展开子关系节点
-                    circleMenu.select("#menu_btn_openNodeRelations").on('click', function () {
+                    circleMenu.select('#menu_btn_openNodeRelations').on('click', function () {
                         if (!isMulti) {
                             // scope.open();
                             openNR(ids, graph);
@@ -663,7 +788,7 @@ function initCanvas(companyId) {
                     });
 
                     // 收起子关系节点
-                    circleMenu.select("#menu_btn_closeNodeRelations").on('click', function () {
+                    circleMenu.select('#menu_btn_closeNodeRelations').on('click', function () {
                         if (!isMulti) {
                             // scope.close();
                             closeNR(ids, graph);
@@ -672,7 +797,7 @@ function initCanvas(companyId) {
                     });
 
                     // 获取节点关系
-                    circleMenu.select("#menu_btn_findRelations").on('click', function () {
+                    circleMenu.select('#menu_btn_findRelations').on('click', function () {
                         if (isMulti) {
                             // scope.find();
                             findNR(ids, graph);
@@ -681,7 +806,7 @@ function initCanvas(companyId) {
                     });
 
                     // 获取深层节点关系
-                    circleMenu.select("#menu_btn_findDeepRelations").on('click', function () {
+                    circleMenu.select('#menu_btn_findDeepRelations').on('click', function () {
                         if (isMulti) {
                             // scope.findDeep();
                             findDeepNR(ids, graph);
@@ -709,13 +834,6 @@ function initCanvas(companyId) {
             return !(ids.includes(rel.startNode) || ids.includes(rel.endNode));
         });
 
-        // nodes_data = nodes_data.filter(function (d) {
-        //     return !ids.includes(d.id);
-        // });
-        // edges_data = edges_data.filter(function (d) {
-        //     return !(ids.includes(d.source.id) || ids.includes(d.target.id));
-        // });
-
         // 更新画图数据
         update(graph, ids);
     }
@@ -734,8 +852,44 @@ function initCanvas(companyId) {
 
     // 展开子关系节点
     function openNR(ids, graph) {
-        console.log('展开子关系节点', ids);
+        toggleMask(true);
 
+        console.log('展开子关系节点', ids);
+        const [id] = ids;
+        const url = './data/sub/spread.' + id + '.json';
+
+        const addNR = (_graph) => {
+            const { relations, nodes } = _graph;
+            graph.relations = [...graph.relations, ...relations];
+            graph.nodes = [...graph.nodes, ...nodes];
+            return graph;
+        };
+
+        var _graph = updateCache.get(url);
+        if (_graph) {
+            // --> 渲染力学图
+            requestAnimationFrame(function () {
+                update(addNR(_graph), ids);
+            });
+        } else {
+            d3.json(url, function (error, _graph) {
+                if (error) {
+                    toggleMask(false);
+                    return console.error(error);
+                }
+                if (typeof _graph === 'string') {
+                    try {
+                        _graph = JSON.parse(_graph);
+                    } catch (error) {
+                        toggleMask(false);
+                        console.error('无法解析 JOSN 格式！', url);
+                        return;
+                    }
+                }
+                updateCache.set(url, _graph);
+                update(addNR(_graph), ids);
+            });
+        }
     }
 
     // 收起子关系节点
@@ -760,7 +914,7 @@ function initCanvas(companyId) {
     var newRFlag, oldRFlag;
     function filterRelation() {
         newRFlag = links.data().map(function (d) {
-            return d.relation.filter(function (d) {
+            return d.lines.filter(function (d) {
                 return d.filter;
             }).join();
         }).sort().join();
@@ -799,9 +953,9 @@ function initCanvas(companyId) {
                     y: ty,
                     r: tr
                 },
-                relation,
+                lines,
             } = link;
-            var count = relation.length; // 连线条数
+            var count = lines.length; // 连线条数
 
             //关系连线
             lineG.selectAll('line').each(function (d, i) {
@@ -874,10 +1028,6 @@ function initCanvas(companyId) {
             scale
         } = d3.event;
         container.attr('transform', 'translate(' + translate + ')scale(' + scale + ')');
-    }
-
-    function keyflip() {
-        shiftKey = d3.event.shiftKey || d3.event.metaKey;
     }
 
     /**
@@ -960,7 +1110,7 @@ function initCanvas(companyId) {
         flowAnim.stopAll();
         d3.selectAll('.flow').remove();
         links.each(function (d) {
-            d.relation.forEach(function (d) {
+            d.lines.forEach(function (d) {
                 delete d.flow;
             });
         });
@@ -984,7 +1134,7 @@ function initCanvas(companyId) {
             flowBall.each(function (d) {
                 d.flow = _flowBall.append('circle')
                     .attr('r', function (d, i) {
-                        return flowScale(d.relation[i].amout) || 5;
+                        return flowScale(d.lines[i].amout) || 5;
                     })
                     .classed('flow', true);
             });
@@ -1011,7 +1161,7 @@ function initCanvas(companyId) {
         let loadingMask = document.querySelector('#timeline-mask');
         if (isShow) {
             if (!loadingMask) {
-                const canvas = document.querySelector('#relation');
+                const canvas = document.querySelector('#graph-main');
                 loadingMask = document.createElement('div');
                 loadingMask.setAttribute('id', 'timeline-mask');
                 canvas.appendChild(loadingMask);
@@ -1049,6 +1199,6 @@ function initCanvas(companyId) {
 
 // 清理画布
 function cleanUpCanvas() {
-    d3.select('#relation').html('');
+    d3.select('#graph-main').html('');
     clearChange();
 }

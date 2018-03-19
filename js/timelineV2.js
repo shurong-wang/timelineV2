@@ -317,7 +317,8 @@ function initCanvas(companyId) {
         nodes = nodes.data(nodes_data, d => d.id);
         nodes.exit().remove();
 
-        // 添加节点（打开 /**/ 注释部分代码，选中“河北华为通信”，点击扩展按钮调试）
+        // 添加节点（打开 /**/ 注释部分代码调试）
+        // 在 /* 前再加一个斜杠 / ，改为 //* 即可打开注释
         /*
         // 关系分组
         links.enter().append('g')

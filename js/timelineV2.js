@@ -306,8 +306,8 @@ function initCanvas(companyId) {
         // --> 2. 更新时间关系图
         // 更新力学图数据
         var { nodes_data, edges_data } = genForeData(graph);
-        console.log('更新后_nodes：', nodes_data);
-        console.log('更新后_edges：', edges_data);
+        // console.log('更新后_nodes：', nodes_data);
+        // console.log('更新后_edges：', edges_data);
 
         // 更新关系（连线）
         links = links.data(edges_data, d => d.source.id + '-' + d.target.id);
@@ -317,9 +317,11 @@ function initCanvas(companyId) {
         nodes = nodes.data(nodes_data, d => d.id);
         nodes.exit().remove();
 
-        // 添加节点（打开 /**/ 注释部分代码调试）
-        // 在 /* 前再加一个斜杠 / ，改为 //* 即可打开注释
-        /*
+        // 重新绑定力导向图数据
+        force
+            .nodes(nodes_data)
+            .links(edges_data);
+
         // 关系分组
         links.enter().append('g')
             .attr('class', 'link')
@@ -406,8 +408,6 @@ function initCanvas(companyId) {
             })
             .call(drag);
 
-        //*/
-
         // // 数据流小球比例尺
         // flowScale = setFlowScale(graph);
 
@@ -419,10 +419,8 @@ function initCanvas(companyId) {
             toggleMask(false);
         });
 
-
         // 开启力学计算
         force.start();
-
     }
 
     /**
@@ -467,10 +465,10 @@ function initCanvas(companyId) {
         }, []);
 
         // 节点去重
-        nodes_data = [...Object.values(nodesMap)];
+        const nodes_data = [...Object.values(nodesMap)];
 
         // 关系过滤
-        edges_data = Object.entries(relsMap).reduce(function (edges, [k, v]) {
+        const edges_data = Object.entries(relsMap).reduce(function (edges, [k, v]) {
             const [startNode, endNode] = k.split(',');
             if (nodesMap[startNode] && nodesMap[endNode]) {
                 edges.push({

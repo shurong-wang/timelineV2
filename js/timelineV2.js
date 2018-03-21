@@ -100,23 +100,21 @@ function initCanvas(companyId) {
     var brushRect = container.append('g')
         .attr('class', 'brush-rect');
 
-    var links = container.selectAll('.link');
+    var links = container.append('g').attr('class', 'links-group').selectAll('.link');
     var rLine = links.selectAll('.r-line');
     var rText = links.selectAll('.r-text');
 
-    var nodes = container.selectAll('.node');
+    var nodes = container.append('g').attr('class', 'nodes-group').selectAll('.node');
     var nCircle = nodes.selectAll('.n-circle');
     var nText = nodes.selectAll('.n-text');
     var selectedHalo = nodes.selectAll('.n-halo');
 
-    var markers = container.selectAll('.marker')
-        .data(['SERVE', 'INVEST_C', 'OWN', 'TELPHONE'])
-        .enter()
-        .append('marker')
-        .attr('id', function (d) {
-            return d;
-        })
+    var markers = container.append('svg:defs').selectAll('.marker')
+        .data(['SERVE', 'INVEST_C', 'OWN', 'TELPHONE']).enter()
+        .append('svg:marker')
         .attr({
+            id: d => d,
+            class: 'marker',
             markerUnits: 'strokeWidth',
             markerWidth: '12',
             markerHeight: '12',
@@ -125,7 +123,6 @@ function initCanvas(companyId) {
             refY: '4',
             orient: 'auto'
         })
-        .attr('class', 'marker')
         .append('path')
         .attr('d', 'M2,2 L8,4 L2,6 L3,4 L2,2');
 
@@ -177,12 +174,12 @@ function initCanvas(companyId) {
         // console.log('更新前_nodes：', nodes_data);
         // console.log('更新前_edges：', edges_data);
 
-        // 绑定力学图数据
+        // 绑定力导向图数据，开启力学计算
         force
             .nodes(nodes_data)
-            .links(edges_data);
-        // 开启力学布局
-        force.start();
+            .links(edges_data)
+            .start();
+
         // 强制停止力学布局
         setTimeout(function () {
             force.stop();
@@ -317,10 +314,11 @@ function initCanvas(companyId) {
         nodes = nodes.data(nodes_data, d => d.id);
         nodes.exit().remove();
 
-        // 重新绑定力导向图数据
+        // 绑定力导向图数据，开启力学计算
         force
             .nodes(nodes_data)
-            .links(edges_data);
+            .links(edges_data)
+            .start();
 
         // 关系分组
         links.enter().append('g')
@@ -419,8 +417,6 @@ function initCanvas(companyId) {
             toggleMask(false);
         });
 
-        // 开启力学计算
-        force.start();
     }
 
     /**

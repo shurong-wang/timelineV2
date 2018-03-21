@@ -243,12 +243,23 @@ function initCanvas(companyId) {
                 // 节点文字
                 nText = nodesG.append('text')
                     .attr('class', 'n-text')
-                    .text(function (d) {
-                        var nodeText = d.name;
-                        return (nodeText.length > 6) ? nodeText.substr(0, 6) : nodeText;
+                    .attr('y', d => {
+                        const len = d.name.length;
+                        return len > 9 ? '-2.3em' : (len <= 4 ? '-1em' : '-1.6em');
                     })
-                    .attr('transform', function () {
-                        return 'translate(' + [0, 3.5] + ')';
+                    .each(d => {
+                        const context = d3.select(this).select('text');
+                        const paragraphs = getParagraphs(d.name);
+                        context
+                            .selectAll('tspan')
+                            .data(paragraphs)
+                            .enter()
+                            .append('tspan')
+                            .attr({
+                                x: 0,
+                                dy: '1.4em'
+                            })
+                            .text(d => d);
                     });
             });
 
@@ -375,12 +386,23 @@ function initCanvas(companyId) {
                 // 节点文字
                 nText = nodesG.append('text')
                     .attr('class', 'n-text')
-                    .text(function (d) {
-                        var nodeText = d.name;
-                        return (nodeText.length > 6) ? nodeText.substr(0, 6) : nodeText;
+                    .attr('y', d => {
+                        const len = d.name.length;
+                        return len > 9 ? '-2.3em' : (len <= 4 ? '-1em' : '-1.6em');
                     })
-                    .attr('transform', function () {
-                        return 'translate(' + [0, 3.5] + ')';
+                    .each(d => {
+                        const context = d3.select(this).select('text');
+                        const paragraphs = getParagraphs(d.name);
+                        context
+                            .selectAll('tspan')
+                            .data(paragraphs)
+                            .enter()
+                            .append('tspan')
+                            .attr({
+                                x: 0,
+                                dy: '1.4em'
+                            })
+                            .text(d => d);
                     });
             });
 
@@ -621,9 +643,9 @@ function initCanvas(companyId) {
      */
     function brushHandle(graph) {
         d3brush
-            .on("brushstart", brushstartFn)
-            .on("brush", brushFn)
-            .on("brushend", brushendFn)
+            .on('brushstart', brushstartFn)
+            .on('brush', brushFn)
+            .on('brushend', brushendFn)
 
         brushRect.call(d3brush)
             .selectAll('rect')
@@ -647,7 +669,7 @@ function initCanvas(companyId) {
 
         // 关闭菜单
         var hideCircleMenu = function () {
-            svg.select("#circle_menu").remove();
+            svg.select('#circle_menu').remove();
         }
 
         // 框选刷
@@ -710,32 +732,32 @@ function initCanvas(companyId) {
                     //控制显示菜单
                     var circleMenu = d3.select('.container').append('foreignObject')
                         .attr('id', 'circle_menu')
-                        .attr("width", 128)
-                        .attr("height", 128)
-                        .attr("x", mouse[0] - 64)
-                        .attr("y", mouse[1] - 64)
+                        .attr('width', 128)
+                        .attr('height', 128)
+                        .attr('x', mouse[0] - 64)
+                        .attr('y', mouse[1] - 64)
                         .html(function () {
                             var html = `` + `
-                        <div class='menu-circle'>
+                        <div class="menu-circle">
                             <div class="menu-ring ${isMulti ? 'multiple-menu' : 'single-menu'}">
-                                <a class='menuItem fa fa-share-alt icon-white'></a>
-                                <a id='menu_btn_findRelations' class='menuItem fa fa-search icon-white multiple-btn'></a>
-                                <a id='menu_btn_findDeepRelations' class='menuItem fa fa-search-plus icon-white multiple-btn'></a>
-                                <a id='menu_btn_trash' class='menuItem fa fa-trash icon-white '></a>
-                                <a id='menu_btn_toggleSelection' class='menuItem fa fa-th-list icon-white single-btn'></a>
-                                <a id ='menu_btn_closeNodeRelations' class='menuItem fa fa-compress icon-white single-btn'></a>
-                                <a id ='menu_btn_openNodeRelations' class='menuItem fa fa-expand icon-white single-btn'></a>
-                                <a id='menu_btn_refresh' class='menuItem fa fa-refresh icon-white multiple-btn'></a>
+                                <a class="menuItem fa fa-share-alt icon-white"></a>
+                                <a id="menu_btn_findRelations" class="menuItem fa fa-search icon-white multiple-btn"></a>
+                                <a id="menu_btn_findDeepRelations" class="menuItem fa fa-search-plus icon-white multiple-btn"></a>
+                                <a id="menu_btn_trash" class="menuItem fa fa-trash icon-white "></a>
+                                <a id="menu_btn_toggleSelection" class="menuItem fa fa-th-list icon-white single-btn"></a>
+                                <a id ="menu_btn_closeNodeRelations" class="menuItem fa fa-compress icon-white single-btn"></a>
+                                <a id ="menu_btn_openNodeRelations" class="menuItem fa fa-expand icon-white single-btn"></a>
+                                <a id="menu_btn_refresh" class="menuItem fa fa-refresh icon-white multiple-btn"></a>
                             </div>
-                            <a href='#' class='center fa fa-remove icon-white'></a>
+                            <a href="#" class="center fa fa-remove icon-white"></a>
                         </div>`;
                             return html;
                         });
 
                     var items = document.querySelectorAll('.menuItem');
                     for (var i = 0, l = items.length; i < l; i++) {
-                        items[i].style.left = (50 - 35 * Math.cos(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + "%";
-                        items[i].style.top = (50 + 35 * Math.sin(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + "%";
+                        items[i].style.left = (50 - 35 * Math.cos(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + '%';
+                        items[i].style.top = (50 + 35 * Math.sin(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + '%';
                     }
 
                     window.clearTimeout(timerId);
@@ -744,7 +766,7 @@ function initCanvas(companyId) {
                     }, 20);
 
                     // 关闭菜单
-                    circleMenu.select(".center").on('click', function () {
+                    circleMenu.select('.center').on('click', function () {
                         closeMenu();
                     });
 
@@ -1089,6 +1111,19 @@ function initCanvas(companyId) {
         var { x2, y2 } = getXY(tr, true);
 
         return { x1, y1, x2, y2 };
+    }
+
+    // 获取节点文字段落
+    function getParagraphs(text) {
+        const len = text.length;
+        if (len <= 4) {
+            return [text];
+        }
+        const topText = text.substring(0, 4);
+        const midText = text.substring(4, 9);
+        let botText = text.substring(9, len);
+        botText = len > 13 ? text.substring(9, 12) + '...' : botText;
+        return [topText, midText, botText];
     }
 
     var circleStyle = {

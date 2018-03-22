@@ -1060,7 +1060,7 @@ function initCanvas(companyId) {
     function getLinePath(sx, sy, tx, ty, sr, tr, i, count) {
 
         var getXY = (r, isTarget = false) => {
-            r += isTarget ? 2 : 0;
+            r += isTarget ? 1 : 0;
             var b1 = tx - sx; // 邻边
             var b2 = ty - sy; // 对边
             var b3 = Math.sqrt(b1 * b1 + b2 * b2); // 斜边
@@ -1073,7 +1073,7 @@ function initCanvas(companyId) {
             var targetX = tx - b;
             var targetY = isY ? ty + a : ty - a;
 
-            var padding = isTarget ? -2 : -10; // 控制边距，取值范围是 0 到 r/2。把圆理解为一个盒子，平行线是装在盒子里
+            var padding = isTarget ? 0 : -8; // 控制边距，取值范围是 0 到 r/2。把圆理解为一个盒子，平行线是装在盒子里
             var maxCount = 4; // 最大连线数
             var minStart = count === 1 ? 0 : -r / 2 + padding;
             var start = minStart * (count / maxCount); // 连线线开始位置

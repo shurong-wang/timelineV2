@@ -80,8 +80,9 @@ circle {
     stroke-width: 2px;
 }
 
-.link text {
-    font-size: 14px;
+.link text.r-text {
+    font-family: sans-serif;
+    font-size: 10px;
     fill: rgb(0, 0, 0);
     stroke-width: 0;
     text-anchor: middle

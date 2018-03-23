@@ -42,18 +42,12 @@ circle {
     stroke-width: .6px;
 }
 
-.Company text {
+.n-text {
     font-size: 12px;
     fill: #fff;
     stroke-width: 0;
-    text-anchor: middle
-}
-
-.Human text {
-    font-size: 12px;
-    fill: #fff;
-    stroke-width: 0;
-    text-anchor: middle
+    text-anchor: middle;
+    cursor: pointer;
 }
 
 .link .SERVE {

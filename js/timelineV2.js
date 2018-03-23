@@ -282,6 +282,7 @@ function initCanvas(companyId) {
             })
             .on('dblclick', function (d) {
                 d3.select(this).classed('fixed', d.fixed = false);
+                d.open === false ? openNR([d.id], graph) : closeNR([d.id], graph);
             })
             .call(drag);
 
@@ -425,6 +426,7 @@ function initCanvas(companyId) {
             })
             .on('dblclick', function (d) {
                 d3.select(this).classed('fixed', d.fixed = false);
+                d.open ? closeNR([d.id], graph) : openNR([d.id], graph);
             })
             .call(drag);
 
@@ -874,8 +876,8 @@ function initCanvas(companyId) {
         console.log('展开子关系节点', ids);
         const [id] = ids;
         const url = './data/sub/spread.' + id + '.json';
-
         const addNR = (_graph) => {
+            toggleNR(id, graph, true);
             const { relations, nodes } = _graph;
             graph.relations = [...graph.relations, ...relations];
             graph.nodes = [...graph.nodes, ...nodes];
@@ -888,35 +890,37 @@ function initCanvas(companyId) {
             requestAnimationFrame(function () {
                 update(addNR(_graph), ids);
             });
-        } else {
-            d3.json(url, function (error, _graph) {
-                if (error) {
-                    toggleMask(false);
-                    return console.error(error);
-                }
-                if (typeof _graph === 'string') {
-                    try {
-                        _graph = JSON.parse(_graph);
-                    } catch (error) {
-                        toggleMask(false);
-                        console.error('无法解析 JOSN 格式！', url);
-                        return;
-                    }
-                }
-                updateCache.set(url, _graph);
-                update(addNR(_graph), ids);
-            });
+            return;
         }
+
+        d3.json(url, function (error, _graph) {
+            if (error) {
+                toggleMask(false);
+                return console.error(error);
+            }
+            if (typeof _graph === 'string') {
+                try {
+                    _graph = JSON.parse(_graph);
+                } catch (error) {
+                    toggleMask(false);
+                    console.error('无法解析 JOSN 格式！', url);
+                    return;
+                }
+            }
+            updateCache.set(url, _graph);
+            update(addNR(_graph), ids);
+        });
+
     }
 
     // 收起子关系节点
     function closeNR(ids, graph) {
         console.log('收起子关系节点', ids);
         const [id] = ids;
-
         if (id === companyId) {
             graph.relations = [];
             graph.nodes = graph.nodes.filter(({ id }) => id === companyId);
+            toggleNR(id, graph, false);
             // 更新画图数据
             update(graph, ids);
             return;
@@ -936,9 +940,16 @@ function initCanvas(companyId) {
         graph.nodes = graph.nodes.filter(({ id }) => {
             return !closeNSet.has(id);
         });
+        toggleNR(id, graph, false);
 
         // 更新画图数据
         update(graph, ids);
+    }
+
+    // 打开/收起节点关系
+    const toggleNR = (id, graph, state = true) => {
+        const openIndex = graph.nodes.findIndex(({ id: openId }) => openId === id);
+        Object.assign(graph.nodes[openIndex], { open: state });
     }
 
     // 获取节点间关系

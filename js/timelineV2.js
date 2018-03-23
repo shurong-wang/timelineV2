@@ -844,11 +844,11 @@ function initCanvas(companyId) {
     function removeNR(ids, graph) {
         console.log('删除节点及关系', ids);
 
-        graph.nodes = graph.nodes.filter(function (node) {
-            return !ids.includes(node.id);
+        graph.nodes = graph.nodes.filter(({ id }) => {
+            return !ids.includes(id);
         });
-        graph.relations = graph.relations.filter(function (rel) {
-            return !(ids.includes(rel.startNode) || ids.includes(rel.endNode));
+        graph.relations = graph.relations.filter(({ startNode, endNode }) => {
+            return !(ids.includes(startNode) || ids.includes(endNode));
         });
 
         // 更新画图数据
@@ -912,7 +912,33 @@ function initCanvas(companyId) {
     // 收起子关系节点
     function closeNR(ids, graph) {
         console.log('收起子关系节点', ids);
+        const [id] = ids;
 
+        if (id === companyId) {
+            graph.relations = [];
+            graph.nodes = graph.nodes.filter(({ id }) => id === companyId);
+            // 更新画图数据
+            update(graph, ids);
+            return;
+        }
+
+        const closeNSet = new Set();
+        graph.relations = graph.relations.filter(({ startNode, endNode }) => {
+            const isCloseRe = (startNode === id || endNode === id) && (endNode !== companyId && startNode !== companyId);
+            if (isCloseRe) {
+                closeNSet.add(startNode);
+                closeNSet.add(endNode);
+            }
+            return !isCloseRe;
+        });
+        closeNSet.delete(id);
+
+        graph.nodes = graph.nodes.filter(({ id }) => {
+            return !closeNSet.has(id);
+        });
+
+        // 更新画图数据
+        update(graph, ids);
     }
 
     // 获取节点间关系

@@ -34,12 +34,13 @@ function initCanvas(companyId) {
     //     companyId: companyId
     // });
 
-    var url = './data/relations.final.json';
+    // var url = './data/relations.final.json';
     // var url = './data/relations.init.json';
 
     // var url = './data/sub/relatison.contact.json';
     // var url = './data/sub/relations.busine.json';
     // var url = './data/sub/relations.bank.json';
+    var url = './data/sub/relatison.household.json';
 
     var isDraging = false;
     var isHoverNode = false;
@@ -492,11 +493,27 @@ function initCanvas(companyId) {
         const edges_data = Object.entries(relsMap).reduce(function (edges, [k, v]) {
             const [startNode, endNode] = k.split(',');
             if (nodesMap[startNode] && nodesMap[endNode]) {
-                edges.push({
-                    source: nodesMap[startNode],
-                    target: nodesMap[endNode],
-                    lines: relsMap[k].lines
+
+                const hasReverse = edges.some(({ source, target, lines }) => {
+                    return (+endNode === +source.id && +startNode === +target.id);
                 });
+
+                // 尝试解决：循环关系重合为双向箭头问题
+                if (hasReverse) {
+                    edges[edges.length - 1].lines.push(...relsMap[k].lines);
+                } else {
+                    edges.push({
+                        source: nodesMap[startNode],
+                        target: nodesMap[endNode],
+                        lines: relsMap[k].lines
+                    });
+                }
+
+                // edges.push({
+                //     source: nodesMap[startNode],
+                //     target: nodesMap[endNode],
+                //     lines: relsMap[k].lines
+                // });
             }
             return edges;
         }, []);
@@ -999,22 +1016,33 @@ function initCanvas(companyId) {
 
             var {
                 source: {
+                    id: sid,
                     x: sx,
                     y: sy,
                     r: sr
                 },
                 target: {
+                    id: tid,
                     x: tx,
                     y: ty,
                     r: tr
                 },
                 lines,
             } = link;
+
             var count = lines.length; // 连线条数
 
             //关系连线
             lineG.selectAll('line').each(function (d, i) {
-                var path = getLinePath(sx, sy, tx, ty, sr, tr, i, count);
+                const { startNode, endNode, type } = d;
+                const isReverse = (+startNode === +tid && +endNode === +sid);
+                if (isReverse) {
+                    var path = getLinePath(tx, ty, sx, sy, tr, sr, i, count, isReverse);
+                }
+                else {
+                    var path = getLinePath(sx, sy, tx, ty, sr, tr, i, count, isReverse);
+                }
+
                 // 设置连线路径 x1, y1, x2, y2
                 d3.select(this).attr(path);
                 // 挂载连线路径 x1, y1, x2, y2 到 line 上
@@ -1094,8 +1122,9 @@ function initCanvas(companyId) {
      * @param {number} r 节点半径
      * @param {number} index 连线索引
      * @param {number} count 连线条数
+     * @param {boolean} isReverse 是否反向关系
      */
-    function getLinePath(sx, sy, tx, ty, sr, tr, i, count) {
+    function getLinePath(sx, sy, tx, ty, sr, tr, i, count = 1, isReverse = false) {
 
         var getXY = r => {
             var b1 = tx - sx; // 邻边
@@ -1109,19 +1138,18 @@ function initCanvas(companyId) {
             var sourceY = isY ? sy - a : sy + a;
             var targetX = tx - b;
             var targetY = isY ? ty + a : ty - a;
-
-            var padding = r < 40 ? -8: 0; // 控制连线距离圆边的边距
+            var padding = r < 40 ? (isReverse ? r : -8) : 0; // 控制连线距离圆边的边距
             var maxCount = 4; // 最大连线数
             var minStart = count === 1 ? 0 : -r / 2 + padding;
             var start = minStart * (count / maxCount); // 连线线开始位置
             start = count === 2 ? start += 5 : start;
             var space = count === 1 ? 0 : Math.abs(minStart * 2 / (maxCount - 1)); // 连线间隔
             var position = start + space * i; // 生成 20 0 -20 的 position 模式
-
+            
             if (position > r) {
                 return;
             }
-
+            
             // s 两次三角函数计算的值
             var s = r - Math.sin(180 * Math.acos(position / r) / Math.PI * Math.PI / 180) * r;
 

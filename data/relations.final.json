@@ -163,6 +163,22 @@
     ],
     "relations": [
         {
+            "id": 33000000000,
+            "startNode": 1000687991,
+            "endNode": 1000055424,
+            "starDate": "1987-02-43",
+            "label": "关系之夫",
+            "type": "HOUSEHOLD_A"
+        },
+        {
+            "id": 34000000000,
+            "startNode": 1000055424,
+            "endNode": 1000687991,
+            "starDate": "1987-02-43",
+            "label": "关系之妻",
+            "type": "HOUSEHOLD_B"
+        },
+        {
             "id": 10000000000,
             "startNode": 94694336,
             "endNode": 94694333,
@@ -170,6 +186,24 @@
             "label": "投资",
             "type": "INVEST_C",
             "amout": 50000000
+        },
+        {
+            "id": 19800000000,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "starDate": "2006-03-18",
+            "label": "银行转账 500 万元整",
+            "type": "BANK",
+            "amout": 5000000
+        },
+        {
+            "id": 19900000000,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "starDate": "2006-06-10",
+            "label": "银行转账 300 万元整",
+            "type": "BANK",
+            "amout": 3000000
         },
         {
             "id": 10000000001,
@@ -475,6 +509,14 @@
             "id": 10000000037,
             "startNode": 1000572142,
             "endNode": 1000687991,
+            "label": "通话",
+            "starDate": "2014-02-01",
+            "type": "TELPHONE"
+        },
+        {
+            "id": 11000000037,
+            "startNode": 1000055424,
+            "endNode": 1000054620,
             "label": "通话",
             "starDate": "2014-02-01",
             "type": "TELPHONE"

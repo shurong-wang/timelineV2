@@ -25,6 +25,7 @@ function initCanvas(companyId) {
     // 94694335     河北省电话设备厂
     // 116035781    深圳华远电信有限公司
 
+    var relLabels = ['SERVE', 'INVEST_C', 'OWN', 'TELPHONE', 'INVEST_C', 'BANK', 'HOUSEHOLD_A', 'HOUSEHOLD_B'];
     var mockIds = [372950, 94694333, 94694335, 116035781];
     companyId = 372950;
 
@@ -33,8 +34,8 @@ function initCanvas(companyId) {
     //     companyId: companyId
     // });
 
-    // var url = './data/relations.final.json';
-    var url = './data/relations.init.json';
+    var url = './data/relations.final.json';
+    // var url = './data/relations.init.json';
 
     // var url = './data/sub/relatison.contact.json';
     // var url = './data/sub/relations.busine.json';
@@ -110,7 +111,7 @@ function initCanvas(companyId) {
     var selectedHalo = nodes.selectAll('.n-halo');
 
     var markers = container.append('svg:defs').selectAll('.marker')
-        .data(['SERVE', 'INVEST_C', 'OWN', 'TELPHONE']).enter()
+        .data(relLabels).enter()
         .append('svg:marker')
         .attr({
             id: d => d,
@@ -1096,8 +1097,7 @@ function initCanvas(companyId) {
      */
     function getLinePath(sx, sy, tx, ty, sr, tr, i, count) {
 
-        var getXY = (r, isTarget = false) => {
-            r += isTarget ? 1 : 0;
+        var getXY = r => {
             var b1 = tx - sx; // 邻边
             var b2 = ty - sy; // 对边
             var b3 = Math.sqrt(b1 * b1 + b2 * b2); // 斜边
@@ -1110,7 +1110,7 @@ function initCanvas(companyId) {
             var targetX = tx - b;
             var targetY = isY ? ty + a : ty - a;
 
-            var padding = isTarget ? 0 : -8; // 控制边距，取值范围是 0 到 r/2。把圆理解为一个盒子，平行线是装在盒子里
+            var padding = r < 40 ? -8: 0; // 控制连线距离圆边的边距
             var maxCount = 4; // 最大连线数
             var minStart = count === 1 ? 0 : -r / 2 + padding;
             var start = minStart * (count / maxCount); // 连线线开始位置
@@ -1145,7 +1145,7 @@ function initCanvas(companyId) {
         }
 
         var { x1, y1 } = getXY(sr);
-        var { x2, y2 } = getXY(tr, true);
+        var { x2, y2 } = getXY(tr);
 
         return { x1, y1, x2, y2 };
     }
@@ -1195,7 +1195,7 @@ function initCanvas(companyId) {
             var _flowBall = d3.select(this);
 
             var flowBall = _flowBall.selectAll('line').filter(function (d) {
-                return (!d.filter) && (d.type == 'INVEST_C' || d.type == 'TELPHONE');
+                return (!d.filter) && (['INVEST_C', 'TELPHONE', 'BANK'].includes(d.type));
             });
 
             flowBall.each(function (d) {

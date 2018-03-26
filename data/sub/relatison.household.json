@@ -1,0 +1,32 @@
+{
+    "relations": [
+        {
+            "id": 33000000000,
+            "startNode": 1000687991,
+            "endNode": 1000055424,
+            "starDate": "1987-02-43",
+            "label": "关系之夫",
+            "type": "HOUSEHOLD_A"
+        },
+        {
+            "id": 34000000000,
+            "startNode": 1000055424,
+            "endNode": 1000687991,
+            "starDate": "1987-02-43",
+            "label": "关系之妻",
+            "type": "HOUSEHOLD_B"
+        }
+    ],
+    "nodes": [
+        {
+            "id": 1000687991,
+            "name": "李国贤",
+            "ntype": "Human"
+        },
+        {
+            "id": 1000055424,
+            "name": "李虹",
+            "ntype": "Human"
+        }
+    ]
+}

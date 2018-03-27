@@ -71,9 +71,8 @@ function initCanvas(companyId) {
 
     var force = d3.layout.force()
         .size([width, height])
-        .charge(-400)
-        .linkDistance(200)
-        .charge(-800)
+        .linkDistance(160)
+        .charge(-1000)
         .on('tick', tick);
 
     var drag = force.drag()

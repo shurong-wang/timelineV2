@@ -89,7 +89,8 @@ circle {
 
 .link text.r-text {
     font-family: sans-serif;
-    font-size: 10px;
+    font-size: 8px;
+    font-weight: 400;
     fill: rgb(0, 0, 0);
     stroke-width: 0;
     text-anchor: middle

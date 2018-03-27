@@ -34,13 +34,13 @@ function initCanvas(companyId) {
     //     companyId: companyId
     // });
 
-    // var url = './data/relations.final.json';
+    var url = './data/relations.final.json';
     // var url = './data/relations.init.json';
 
     // var url = './data/sub/relatison.contact.json';
     // var url = './data/sub/relations.busine.json';
     // var url = './data/sub/relations.bank.json';
-    var url = './data/sub/relatison.household.json';
+    // var url = './data/sub/relatison.household.json';
 
     var isDraging = false;
     var isHoverNode = false;
@@ -488,7 +488,7 @@ function initCanvas(companyId) {
 
         // 节点去重
         const nodes_data = [...Object.values(nodesMap)];
-
+        
         // 关系过滤
         const edges_data = Object.entries(relsMap).reduce(function (edges, [k, v]) {
             const [startNode, endNode] = k.split(',');
@@ -497,10 +497,10 @@ function initCanvas(companyId) {
                 const hasReverse = edges.some(({ source, target, lines }) => {
                     return (+endNode === +source.id && +startNode === +target.id);
                 });
-
+                
                 // 尝试解决：循环关系重合为双向箭头问题
                 if (hasReverse) {
-                    edges[edges.length - 1].lines.push(...relsMap[k].lines);
+                    edges[0].lines.unshift(...relsMap[k].lines);
                 } else {
                     edges.push({
                         source: nodesMap[startNode],
@@ -518,6 +518,8 @@ function initCanvas(companyId) {
             return edges;
         }, []);
 
+        // console.log(edges_data);
+        
         // getDirectRelsById(0, useableRels, nodesMap);
         // getRelationsByType([], useableRels, nodesMap);
 
@@ -1139,7 +1141,7 @@ function initCanvas(companyId) {
             var targetX = tx - b;
             var targetY = isY ? ty + a : ty - a;
             var padding = r < 40 ? (isReverse ? r : -8) : 0; // 控制连线距离圆边的边距
-            var maxCount = 4; // 最大连线数
+            var maxCount = 5; // 最大连线数
             var minStart = count === 1 ? 0 : -r / 2 + padding;
             var start = minStart * (count / maxCount); // 连线线开始位置
             start = count === 2 ? start += 5 : start;
@@ -1147,7 +1149,12 @@ function initCanvas(companyId) {
             var position = start + space * i; // 生成 20 0 -20 的 position 模式
             
             if (position > r) {
-                return;
+                return { 
+                    x1: sx, 
+                    y1: sy, 
+                    x2: tx, 
+                    y2: ty 
+                };
             }
             
             // s 两次三角函数计算的值
@@ -1193,7 +1200,7 @@ function initCanvas(companyId) {
 
     var circleStyle = {
         Human: {
-            r: 25
+            r: 30
         },
         Company: {
             r: 40

@@ -56,18 +56,8 @@
             "ntype": "Human"
         },
         {
-            "id": 1004644143,
-            "name": "胡维枝",
-            "ntype": "Human"
-        },
-        {
             "id": 1000055424,
             "name": "李虹",
-            "ntype": "Human"
-        },
-        {
-            "id": 1000156140,
-            "name": "高生",
             "ntype": "Human"
         },
         {
@@ -83,16 +73,6 @@
         {
             "id": 1000353839,
             "name": "刘立文",
-            "ntype": "Human"
-        },
-        {
-            "id": 1000576618,
-            "name": "何戬",
-            "ntype": "Human"
-        },
-        {
-            "id": 1020920511,
-            "name": "逯泽义",
             "ntype": "Human"
         },
         {
@@ -290,14 +270,6 @@
             "type": "SERVE"
         },
         {
-            "id": 10000000013,
-            "startNode": 1004644143,
-            "endNode": 372950,
-            "label": "董事",
-            "starDate": "2016-05-13",
-            "type": "SERVE"
-        },
-        {
             "id": 11000000010,
             "startNode": 1000054620,
             "endNode": 94694333,
@@ -330,14 +302,6 @@
             "type": "SERVE"
         },
         {
-            "id": 10000000015,
-            "startNode": 1000156140,
-            "endNode": 372950,
-            "label": "董事",
-            "starDate": "2009-01-13",
-            "type": "SERVE"
-        },
-        {
             "id": 10000000016,
             "startNode": 1003227173,
             "endNode": 372950,
@@ -367,22 +331,6 @@
             "endNode": 372950,
             "label": "董事长",
             "starDate": "2008-09-22",
-            "type": "SERVE"
-        },
-        {
-            "id": 10000000020,
-            "startNode": 1000576618,
-            "endNode": 372950,
-            "label": "董事",
-            "starDate": "2008-09-22",
-            "type": "SERVE"
-        },
-        {
-            "id": 10000000021,
-            "startNode": 1020920511,
-            "endNode": 372950,
-            "label": "董事",
-            "starDate": "2010-09-22",
             "type": "SERVE"
         },
         {

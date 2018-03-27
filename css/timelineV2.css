@@ -30,60 +30,7 @@ circle {
     shape-rendering: crispEdges;
 }
 
-.Company {
-    fill: rgb(8, 147, 228);
-    stroke: rgb(7, 117, 180);
-    stroke-width: .6px;
-}
-
-.Human {
-    fill: rgb(255, 150, 107);
-    stroke: rgb(247, 115, 62);
-    stroke-width: .6px;
-}
-
-.n-text {
-    font-size: 12px;
-    fill: #fff;
-    stroke-width: 0;
-    text-anchor: middle;
-    cursor: pointer;
-}
-
-.link .SERVE {
-    fill: rgb(106, 220, 254);
-    stroke: rgb(106, 220, 254);
-    stroke-width: 2px;
-}
-
-.link .INVEST_C {
-    fill: rgb(141, 149, 250);
-    stroke: rgb(141, 149, 250);
-    stroke-width: 2px;
-}
-
-.link .BANK {
-    fill: rgb(227, 166, 0);
-    stroke: rgb(227, 166, 0);
-    stroke-width: 2px;
-}
-
-.link .HOUSEHOLD_A,
-.link .HOUSEHOLD_B {
-    fill: rgb(176, 114, 208);
-    stroke: rgb(176, 114, 208);
-    stroke-width: 2px;
-}
-
-.link .OWN {
-    fill: rgb(249, 225, 105);
-    stroke: rgb(249, 225, 105);
-    stroke-width: 2px;
-}
-
-.link .TELPHONE {
-    fill: rgb(1, 194, 106);
-    stroke: rgb(1, 194, 106);
+.link line.r-line {
     stroke-width: 2px;
 }
 
@@ -96,37 +43,7 @@ circle {
     text-anchor: middle
 }
 
-#TELPHONE {
-    fill: rgb(1, 194, 106);
-}
-
-#SERVE {
-    fill: rgb(106, 220, 254);
-}
-
-#INVEST_C {
-    fill: rgb(141, 149, 250);
-}
-
-#OWN {
-    fill: rgb(249, 225, 105);
-}
-
-#BANK {
-    fill: rgb(227, 166, 0);
-}
-
-#HOUSEHOLD_A,
-#HOUSEHOLD_B {
-    fill: rgb(176, 114, 208);
-}
-
-.flow {
-    fill: rgb(141, 149, 250);
-    stroke-width: 0;
-}
-
-.link .filter {
+.link .disuse {
     fill: #ccc;
     stroke: #ccc
 }
@@ -141,9 +58,21 @@ circle {
     stroke: rgba(255, 0, 119, .6);
 }
 
-.node.filter circle {
+.node .n-circle.disuse {
     fill: #ccc;
     stroke: #ccc;
+}
+
+.node text.n-text {
+    font-size: 12px;
+    fill: #fff;
+    stroke-width: 0;
+    text-anchor: middle;
+    cursor: pointer;
+}
+
+.flow {
+    stroke-width: 0;
 }
 
 #graph-main {

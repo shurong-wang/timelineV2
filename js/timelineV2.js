@@ -1,5 +1,6 @@
 var tl = new TimelineBar(d3.select('#timelineBox').node());
-var timerId = null;
+var menuTimer = null;
+var dragTimer = null;
 
 function switchScope(flag) {
     flag ? tl.showSelect() : tl.hideSelect();
@@ -17,6 +18,30 @@ var updateCache = new Map();
  * @param {Number} companyId 
  */
 function initCanvas(companyId) {
+
+    var NODE_STYLE = {
+        Human: {
+            r: 30,
+            fill: 'rgb(255, 150, 107)',
+            stroke: 'rgb(247, 115, 62)'
+        },
+        Company: {
+            r: 40,
+            fill: 'rgb(8, 147, 228)',
+            stroke: 'rgb(7, 117, 180)'
+        }
+    }
+
+    const RELATION_COLOURS = {
+        TELPHONE: 'rgb(1, 194, 106)',
+        SERVE: 'rgb(106, 220, 254)',
+        INVEST_C: 'rgb(141, 149, 250)',
+        OWN: 'rgb(249, 225, 105)',
+        BANK: 'rgb(227, 166, 0)',
+        HOUSEHOLD_A: 'rgb(176, 114, 208)',
+        HOUSEHOLD_B: 'rgb(176, 114, 208)'
+    };
+
     toggleMask(true);
 
     // mock 数据公司 id:
@@ -42,6 +67,7 @@ function initCanvas(companyId) {
     // var url = './data/sub/relations.bank.json';
     // var url = './data/sub/relatison.household.json';
 
+    var ticking = false;
     var isDraging = false;
     var isHoverNode = false;
     var isHoverLine = false;
@@ -71,9 +97,12 @@ function initCanvas(companyId) {
 
     var force = d3.layout.force()
         .size([width, height])
-        .linkDistance(160)
-        .charge(-1000)
-        .on('tick', tick);
+        .linkDistance(180)
+        .charge([-1800])
+        .on('start', () => ticking = true)
+        .on('tick', tick)
+        .on('end', () => ticking = false);
+
 
     var drag = force.drag()
         .on('dragstart', dragstart)
@@ -124,11 +153,12 @@ function initCanvas(companyId) {
             refY: '4',
             orient: 'auto'
         })
+        .style('fill', d => RELATION_COLOURS[d])
         .append('path')
         .attr('d', 'M2,2 L8,4 L2,6 L3,4 L2,2');
 
     // 数据流小球比例尺
-    var flowScale = d3.scale.linear().range([8, 15]);
+    var flowScale = d3.scale.linear().range([4, 8]);
 
     /** 
      * 获取画图数据 && 绘图
@@ -200,11 +230,8 @@ function initCanvas(companyId) {
                 // 关系连线
                 rLine = lineEnter.append('line')
                     .attr('class', 'r-line')
-                    .each(function (d) {
-                        d3.select(this)
-                            .classed(d.type, true)
-                            .attr('marker-end', 'url(#' + d.type + ')');
-                    });
+                    .attr('stroke', d => RELATION_COLOURS[d.type])
+                    .attr('marker-end', d => 'url(#' + d.type + ')');
 
                 // 关系文字
                 rText = lineEnter.append('text')
@@ -233,12 +260,12 @@ function initCanvas(companyId) {
                 nodesG.classed(d.ntype, true);
                 d.selected = false;
                 d.previouslySelected = false;
-                d.r = circleStyle[d.ntype].r;
+                d.r = NODE_STYLE[d.ntype].r;
 
                 // 节点圆形
                 nCircle = nodesG.append('circle')
                     .attr('class', 'n-circle')
-                    .attr(circleStyle[d.ntype])
+                    .attr(NODE_STYLE[d.ntype])
                     .classed('curr', d => d.id === companyId);
 
                 // 节点文字
@@ -271,7 +298,7 @@ function initCanvas(companyId) {
                 }
                 isHoverNode = true;
                 if (!isBrushing) {
-                    d3.select(this).select('circle').transition().attr('r', 8 + circleStyle[d.ntype].r);
+                    d3.select(this).select('circle').transition().attr('r', 8 + NODE_STYLE[d.ntype].r);
                 }
             })
             .on('mouseleave', function (d) {
@@ -279,7 +306,7 @@ function initCanvas(companyId) {
                     return;
                 }
                 isHoverNode = false;
-                d3.select(this).select('circle').transition().attr('r', circleStyle[d.ntype].r);
+                d3.select(this).select('circle').transition().attr('r', NODE_STYLE[d.ntype].r);
             })
             .on('dblclick', function (d) {
                 d3.select(this).classed('fixed', d.fixed = false);
@@ -345,11 +372,8 @@ function initCanvas(companyId) {
                 // 关系连线
                 rLine = lineEnter.append('line')
                     .attr('class', 'r-line')
-                    .each(function (d) {
-                        d3.select(this)
-                            .classed(d.type, true)
-                            .attr('marker-end', 'url(#' + d.type + ')');
-                    });
+                    .attr('stroke', d => RELATION_COLOURS[d.type])
+                    .attr('marker-end', d => 'url(#' + d.type + ')');
 
                 // 关系文字
                 rText = lineEnter.append('text')
@@ -377,12 +401,12 @@ function initCanvas(companyId) {
                 nodesG.classed(d.ntype, true);
                 d.selected = false;
                 d.previouslySelected = false;
-                d.r = circleStyle[d.ntype].r;
+                d.r = NODE_STYLE[d.ntype].r;
 
                 // 节点圆形
                 nCircle = nodesG.append('circle')
                     .attr('class', 'n-circle')
-                    .attr(circleStyle[d.ntype])
+                    .attr(NODE_STYLE[d.ntype])
                     .classed('curr', d => d.id === companyId);
 
                 // 节点文字
@@ -415,7 +439,7 @@ function initCanvas(companyId) {
                 }
                 isHoverNode = true;
                 if (!isBrushing) {
-                    d3.select(this).select('circle').transition().attr('r', 8 + circleStyle[d.ntype].r);
+                    d3.select(this).select('circle').transition().attr('r', 8 + NODE_STYLE[d.ntype].r);
                 }
             })
             .on('mouseleave', function (d) {
@@ -423,7 +447,7 @@ function initCanvas(companyId) {
                     return;
                 }
                 isHoverNode = false;
-                d3.select(this).select('circle').transition().attr('r', circleStyle[d.ntype].r);
+                d3.select(this).select('circle').transition().attr('r', NODE_STYLE[d.ntype].r);
             })
             .on('dblclick', function (d) {
                 d3.select(this).classed('fixed', d.fixed = false);
@@ -487,19 +511,22 @@ function initCanvas(companyId) {
 
         // 节点去重
         const nodes_data = [...Object.values(nodesMap)];
-        
+
         // 关系过滤
         const edges_data = Object.entries(relsMap).reduce(function (edges, [k, v]) {
             const [startNode, endNode] = k.split(',');
             if (nodesMap[startNode] && nodesMap[endNode]) {
 
+                // 尝试解决：循环关系重合为双向箭头问题
                 const hasReverse = edges.some(({ source, target, lines }) => {
                     return (+endNode === +source.id && +startNode === +target.id);
                 });
-                
-                // 尝试解决：循环关系重合为双向箭头问题
                 if (hasReverse) {
-                    edges[edges.length - 1].lines.unshift(...relsMap[k].lines);
+                    for (const { source, target, lines } of edges) {
+                        if (+endNode === +source.id && +startNode === +target.id) {
+                            lines.unshift(...relsMap[k].lines);
+                        }
+                    }
                 } else {
                     edges.push({
                         source: nodesMap[startNode],
@@ -518,7 +545,7 @@ function initCanvas(companyId) {
         }, []);
 
         // console.log(edges_data);
-        
+
         // getDirectRelsById(0, useableRels, nodesMap);
         // getRelationsByType([], useableRels, nodesMap);
 
@@ -613,22 +640,22 @@ function initCanvas(companyId) {
                 onBrush: function (startTime, endTime) {
                     if (startTime === endTime) {
                         edges_data.forEach(function (link) {
-                            link.lines.forEach(function (ln) { ln.filter = false; });
+                            link.lines.forEach(function (ln) { ln.disuse = false; });
                             link.source.filter = false;
                         });
                     } else {
                         edges_data.forEach(function (link) {
                             link.lines.forEach(function (ln) {
                                 var time = new Date(ln.starDate).getTime();
-                                ln.filter = !(time > startTime && time < endTime);
+                                ln.disuse = !(time > startTime && time < endTime);
                             });
                             link.source.filter = !link.lines.filter(function (d) {
-                                return !d.filter
+                                return !d.disuse
                             }).length;
                         });
                     }
                     // 根据时间轴范围变化，筛选关系（修改样式）
-                    filterRelation();
+                    slideTimeline();
                 }
             },
             height: 80,
@@ -674,7 +701,7 @@ function initCanvas(companyId) {
 
         // 选中聚焦环
         selectedHalo = nodes.append('circle')
-            .attr('r', function (d) { return circleStyle[d.ntype].r + 6; })
+            .attr('r', function (d) { return NODE_STYLE[d.ntype].r + 6; })
             .attr('class', 'n-halo')
             .attr('id', function (d) { return 'halo-' + d.id; })
             .style('fill', 'rgba(0,0,0,.0)')
@@ -781,8 +808,8 @@ function initCanvas(companyId) {
                         items[i].style.top = (50 + 35 * Math.sin(-0.5 * Math.PI - 2 * (1 / l) * i * Math.PI)).toFixed(4) + '%';
                     }
 
-                    window.clearTimeout(timerId);
-                    timerId = setTimeout(function () {
+                    window.clearTimeout(menuTimer);
+                    menuTimer = setTimeout(function () {
                         document.querySelector('.menu-circle').classList.toggle('open');
                     }, 20);
 
@@ -857,7 +884,7 @@ function initCanvas(companyId) {
         }
 
         // 时间轴筛选关系
-        filterRelation();
+        slideTimeline();
     }
 
 
@@ -985,21 +1012,21 @@ function initCanvas(companyId) {
 
     // 时间轴筛选关系（修改样式）
     var newRFlag, oldRFlag;
-    function filterRelation() {
+    function slideTimeline() {
         newRFlag = links.data().map(function (d) {
             return d.lines.filter(function (d) {
-                return d.filter;
+                return d.disuse;
             }).join();
         }).sort().join();
 
         nodes.each(function (d) {
-            d3.select(this).classed('filter', d.filter);
+            d3.select(this).classed('disuse', d.disuse);
             d3.select(this).classed('selected', d.selected);
         });
 
         links.each(function (d) {
             d3.select(this).selectAll('line').each(function (d) {
-                d3.select(this).classed('filter', d.filter);
+                d3.select(this).classed('filter', d.disuse);
                 d3.select(this).classed('selected', d.selected);
             });
         });
@@ -1012,6 +1039,7 @@ function initCanvas(companyId) {
     }
 
     function tick() {
+        ticking = true;
         links.each(function (link) {
             var lineG = d3.select(this);
 
@@ -1084,6 +1112,7 @@ function initCanvas(companyId) {
     }
 
     function dragstart(d) {
+        clearTimeout(dragTimer);
         isDraging = true;
         d3.select(this).classed('fixed', d.fixed = true);
         d3.event.sourceEvent.stopPropagation();
@@ -1097,9 +1126,9 @@ function initCanvas(companyId) {
 
     function dragend(d) {
         isDraging = false;
-        setTimeout(function () {
+        dragTimer = setTimeout(function () {
             force.stop();
-        }, 700);
+        }, 1500);
     }
 
     function zoomFn() {
@@ -1146,16 +1175,16 @@ function initCanvas(companyId) {
             start = count === 2 ? start += 5 : start;
             var space = count === 1 ? 0 : Math.abs(minStart * 2 / (maxCount - 1)); // 连线间隔
             var position = start + space * i; // 生成 20 0 -20 的 position 模式
-            
+
             if (position > r) {
-                return { 
-                    x1: sx, 
-                    y1: sy, 
-                    x2: tx, 
-                    y2: ty 
+                return {
+                    x1: sx,
+                    y1: sy,
+                    x2: tx,
+                    y2: ty
                 };
             }
-            
+
             // s 两次三角函数计算的值
             var s = r - Math.sin(180 * Math.acos(position / r) / Math.PI * Math.PI / 180) * r;
 
@@ -1197,15 +1226,6 @@ function initCanvas(companyId) {
         return [topText, midText, botText];
     }
 
-    var circleStyle = {
-        Human: {
-            r: 30
-        },
-        Company: {
-            r: 40
-        }
-    }
-
     // 清除数据流动画
     function clearFlowAnim() {
         flowAnim.stopAll();
@@ -1218,42 +1238,39 @@ function initCanvas(companyId) {
     }
 
     // 渲染数据流动画
-    function renderFlowBall(link) {
+    function renderFlowBall(links) {
         clearFlowAnim();
-        var activeLink = link.filter(function (d) {
-            return !d.filter;
-        });
+        var activeLinks = links.filter(d => !d.disuse);
 
-        activeLink.each(function (link) {
-            var i = 0;
-            var _flowBall = d3.select(this);
+        activeLinks.each(function () {
+            var m = 0;
+            var activeLink = d3.select(this);
 
-            var flowBall = _flowBall.selectAll('line').filter(function (d) {
-                return (!d.filter) && (['INVEST_C', 'TELPHONE', 'BANK'].includes(d.type));
+            var flowLines = activeLink.selectAll('line').filter(function (d) {
+                return (!d.disuse) && (['INVEST_C', 'TELPHONE', 'BANK'].includes(d.type));
             });
 
-            flowBall.each(function (d) {
-                d.flow = _flowBall.append('circle')
-                    .attr('r', function (d, i) {
-                        return flowScale(d.lines[i].amout) || 5;
-                    })
-                    .classed('flow', true);
+            flowLines.each(function (d, k) {
+                d.flow = activeLink.append('circle')
+                    .attr('class', 'flow')
+                    .attr('r', d => flowScale(d.lines[k].amout) || 5)
+                    .style('fill', d => RELATION_COLOURS[d.lines[k].type])
             });
 
             flowAnim.start(function () {
-                flowBall.each(function (d, index) {
-                    var flowBall = d3.select(this);
-                    var x1 = parseInt(flowBall.attr('x1'));
-                    var y1 = parseInt(flowBall.attr('y1'));
-                    var x2 = parseInt(flowBall.attr('x2'));
-                    var y2 = parseInt(flowBall.attr('y2'));
-                    var x = x1 + ((i % 200) / 199) * (x2 - x1);
-                    var y = y1 + ((i % 200) / 199) * (y2 - y1);
+                flowLines.each(function (d) {
+                    var flowLine = d3.select(this);
+                    var x1 = parseInt(flowLine.attr('x1'));
+                    var y1 = parseInt(flowLine.attr('y1'));
+                    var x2 = parseInt(flowLine.attr('x2'));
+                    var y2 = parseInt(flowLine.attr('y2'));
+                    var x = x1 + ((m % 200) / 199) * (x2 - x1);
+                    var y = y1 + ((m % 200) / 199) * (y2 - y1);
                     if (x && y) {
-                        d.flow.attr('cx', x).attr('cy', y)
+                        d.flow.attr('cx', x).attr('cy', y);
                     }
                 });
-                i++;
+                m++;
             }, 90);
         });
     }

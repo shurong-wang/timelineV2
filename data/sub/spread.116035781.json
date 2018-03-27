@@ -30,7 +30,7 @@
             "id": 10000000032,
             "startNode": 1000049591,
             "endNode": 116035781,
-            "label": "董事长",
+            "label": "职务:董事长",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -38,7 +38,7 @@
             "id": 10000000033,
             "startNode": 1000101471,
             "endNode": 116035781,
-            "label": "副董事长",
+            "label": "职务:副董事长",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -46,7 +46,7 @@
             "id": 10000000034,
             "startNode": 1007036372,
             "endNode": 116035781,
-            "label": "总经理",
+            "label": "职务:总经理",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -54,7 +54,7 @@
             "id": 10000000035,
             "startNode": 1000235289,
             "endNode": 116035781,
-            "label": "副总经理",
+            "label": "职务:副总经理",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -62,7 +62,7 @@
             "id": 10000000036,
             "startNode": 1000111648,
             "endNode": 116035781,
-            "label": "副总经理",
+            "label": "职务:副总经理",
             "starDate": "2014-02-01",
             "type": "SERVE"
         }

@@ -12,7 +12,7 @@
             "id": 10000000019,
             "startNode": 1000572142,
             "endNode": 372950,
-            "label": "董事长",
+            "label": "职务:董事长",
             "starDate": "2008-09-22",
             "type": "SERVE"
         },
@@ -44,7 +44,7 @@
             "id": 10000000032,
             "startNode": 1000049591,
             "endNode": 116035781,
-            "label": "董事长",
+            "label": "职务:董事长",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -52,7 +52,7 @@
             "id": 10000000010,
             "startNode": 1000054620,
             "endNode": 372950,
-            "label": "总经理",
+            "label": "职务:总经理",
             "starDate": "2011-05-13",
             "type": "SERVE"
         },
@@ -60,7 +60,7 @@
             "id": 10000000022,
             "startNode": 1000054620,
             "endNode": 372950,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2010-09-22",
             "type": "SERVE"
         },
@@ -68,7 +68,7 @@
             "id": 10000000011,
             "startNode": 1005399843,
             "endNode": 372950,
-            "label": "监事",
+            "label": "职务:监事",
             "starDate": "2011-05-13",
             "type": "SERVE"
         },
@@ -76,7 +76,7 @@
             "id": 10000000012,
             "startNode": 1000389456,
             "endNode": 372950,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2015-05-13",
             "type": "SERVE"
         },
@@ -84,7 +84,7 @@
             "id": 11000000010,
             "startNode": 1000054620,
             "endNode": 94694333,
-            "label": "总经理",
+            "label": "职务:总经理",
             "starDate": "2016-05-13",
             "type": "SERVE"
         },
@@ -92,7 +92,7 @@
             "id": 11000000022,
             "startNode": 1000054620,
             "endNode": 94694333,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2017-09-22",
             "type": "SERVE"
         },
@@ -108,7 +108,7 @@
             "id": 10000000014,
             "startNode": 1000055424,
             "endNode": 372950,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2012-05-13",
             "type": "SERVE"
         },
@@ -116,7 +116,7 @@
             "id": 10000000016,
             "startNode": 1003227173,
             "endNode": 372950,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2007-05-13",
             "type": "SERVE"
         },
@@ -124,7 +124,7 @@
             "id": 10000000017,
             "startNode": 1001521422,
             "endNode": 372950,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2007-07-13",
             "type": "SERVE"
         },
@@ -132,7 +132,7 @@
             "id": 10000000018,
             "startNode": 1000353839,
             "endNode": 372950,
-            "label": "监事",
+            "label": "职务:监事",
             "starDate": "2014-09-22",
             "type": "SERVE"
         },
@@ -140,7 +140,7 @@
             "id": 10000000023,
             "startNode": 1000164506,
             "endNode": 94694333,
-            "label": "监事",
+            "label": "职务:监事",
             "starDate": "2013-05-11",
             "type": "SERVE"
         },
@@ -148,7 +148,7 @@
             "id": 10000000024,
             "startNode": 1000057185,
             "endNode": 94694333,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2013-05-11",
             "type": "SERVE"
         },
@@ -156,7 +156,7 @@
             "id": 10000000025,
             "startNode": 1000035006,
             "endNode": 94694333,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2013-05-11",
             "type": "SERVE"
         },
@@ -164,7 +164,7 @@
             "id": 10000000026,
             "startNode": 1000042649,
             "endNode": 94694333,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2014-05-11",
             "type": "SERVE"
         },
@@ -172,7 +172,7 @@
             "id": 10000000028,
             "startNode": 1020350073,
             "endNode": 94694333,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2015-05-11",
             "type": "SERVE"
         },
@@ -180,7 +180,7 @@
             "id": 10000000029,
             "startNode": 1000061617,
             "endNode": 94694333,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -188,7 +188,7 @@
             "id": 10000000030,
             "startNode": 1008513321,
             "endNode": 94694333,
-            "label": "监事",
+            "label": "职务:监事",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -196,7 +196,7 @@
             "id": 10000000031,
             "startNode": 1001773535,
             "endNode": 94694333,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -204,7 +204,7 @@
             "id": 10000000033,
             "startNode": 1000101471,
             "endNode": 116035781,
-            "label": "副董事长",
+            "label": "职务:副董事长",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -212,7 +212,7 @@
             "id": 10000000034,
             "startNode": 1007036372,
             "endNode": 116035781,
-            "label": "总经理",
+            "label": "职务:总经理",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -220,7 +220,7 @@
             "id": 10000000035,
             "startNode": 1000235289,
             "endNode": 116035781,
-            "label": "副总经理",
+            "label": "职务:副总经理",
             "starDate": "2014-02-01",
             "type": "SERVE"
         },
@@ -228,7 +228,7 @@
             "id": 10000000036,
             "startNode": 1000111648,
             "endNode": 116035781,
-            "label": "副总经理",
+            "label": "职务:副总经理",
             "starDate": "2014-02-01",
             "type": "SERVE"
         }

@@ -49,7 +49,7 @@
             "id": 10000000010,
             "startNode": 1000054620,
             "endNode": 372950,
-            "label": "总经理",
+            "label": "职务:总经理",
             "starDate": "2011-05-13",
             "type": "SERVE"
         },
@@ -57,7 +57,7 @@
             "id": 10000000022,
             "startNode": 1000054620,
             "endNode": 372950,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2010-09-22",
             "type": "SERVE"
         },
@@ -65,7 +65,7 @@
             "id": 11000000010,
             "startNode": 1000054620,
             "endNode": 94694333,
-            "label": "总经理",
+            "label": "职务:总经理",
             "starDate": "2016-05-13",
             "type": "SERVE"
         },
@@ -73,7 +73,7 @@
             "id": 11000000022,
             "startNode": 1000054620,
             "endNode": 94694333,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2017-09-22",
             "type": "SERVE"
         },
@@ -89,7 +89,7 @@
             "id": 10000000014,
             "startNode": 1000055424,
             "endNode": 372950,
-            "label": "董事",
+            "label": "职务:董事",
             "starDate": "2012-05-13",
             "type": "SERVE"
         }

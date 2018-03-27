@@ -499,7 +499,7 @@ function initCanvas(companyId) {
                 
                 // 尝试解决：循环关系重合为双向箭头问题
                 if (hasReverse) {
-                    edges[0].lines.unshift(...relsMap[k].lines);
+                    edges[edges.length - 1].lines.unshift(...relsMap[k].lines);
                 } else {
                     edges.push({
                         source: nodesMap[startNode],

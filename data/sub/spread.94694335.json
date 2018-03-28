@@ -1,12 +1,48 @@
 {
     "relations": [
         {
+            "id": 19800,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "starDate": "2012-03-18",
+            "label": "会议用车1.8万元整",
+            "type": "BANK",
+            "amout": 18000
+        },
+        {
+            "id": 19900,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "starDate": "2013-06-10",
+            "label": "设备维护30万元整",
+            "type": "BANK",
+            "amout": 3000000
+        },
+        {
             "id": 10000000003,
             "startNode": 94694335,
             "endNode": 372950,
             "label": "投资",
             "starDate": "2011-09-15",
             "type": "INVEST_C",
+            "amout": 500000
+        },
+        {
+            "id": 19803,
+            "startNode": 94694335,
+            "endNode": 1000572142,
+            "starDate": "2017-04-02",
+            "label": "转账250万元整",
+            "type": "BANK",
+            "amout": 2500000
+        },
+        {
+            "id": 19804,
+            "startNode": 94694335,
+            "endNode": 1000572142,
+            "starDate": "2018-03-02",
+            "label": "转账50万元整",
+            "type": "BANK",
             "amout": 500000
         }
     ],
@@ -20,6 +56,11 @@
             "id": 372950,
             "name": "河北信息产业股份有限公司",
             "ntype": "Company"
+        },
+        {
+            "id": 1000572142,
+            "name": "陈朝",
+            "ntype": "Human"
         }
     ]
 }

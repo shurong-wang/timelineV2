@@ -1,0 +1,32 @@
+{
+    "relations": [
+        {
+            "id": 110381,
+            "startNode": 1000055424,
+            "endNode": 1000572142,
+            "label": "通话29s",
+            "starDate": "2017-05-21",
+            "type": "TELPHONE"
+        },
+        {
+            "id": 110382,
+            "startNode": 1000055424,
+            "endNode": 1000572142,
+            "label": "通话103s",
+            "starDate": "2017-11-11",
+            "type": "TELPHONE"
+        }
+    ],
+    "nodes": [
+        {
+            "id": 1000055424,
+            "name": "李虹",
+            "ntype": "Human"
+        },
+        {
+            "id": 1000572142,
+            "name": "陈朝",
+            "ntype": "Human"
+        }
+    ]
+}

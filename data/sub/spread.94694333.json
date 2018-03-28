@@ -1,13 +1,22 @@
 {
     "relations": [
         {
-            "id": 10000000000,
-            "startNode": 94694336,
+            "id": 19901,
+            "startNode": 372950,
             "endNode": 94694333,
-            "starDate": "2006-02-13",
-            "label": "投资",
-            "type": "INVEST_C",
-            "amout": 50000000
+            "starDate": "2014-08-08",
+            "label": "团建费用15万元整",
+            "type": "BANK",
+            "amout": 150000
+        },
+        {
+            "id": 19902,
+            "startNode": 372950,
+            "endNode": 94694333,
+            "starDate": "2015-01-23",
+            "label": "人事管理系统建设一期500万元整",
+            "type": "BANK",
+            "amout": 5000000
         },
         {
             "id": 10000000004,
@@ -17,6 +26,15 @@
             "starDate": "2012-06-18",
             "type": "INVEST_C",
             "amout": 500000
+        },
+        {
+            "id": 10000000001,
+            "startNode": 94694333,
+            "endNode": 116035781,
+            "label": "投资",
+            "starDate": "2007-07-21",
+            "type": "INVEST_C",
+            "amout": 50000
         },
         {
             "id": 10000000008,
@@ -59,14 +77,6 @@
             "type": "OWN"
         },
         {
-            "id": 10000000023,
-            "startNode": 1000164506,
-            "endNode": 94694333,
-            "label": "职务:监事",
-            "starDate": "2013-05-11",
-            "type": "SERVE"
-        },
-        {
             "id": 10000000024,
             "startNode": 1000057185,
             "endNode": 94694333,
@@ -105,28 +115,12 @@
             "label": "职务:董事",
             "starDate": "2014-02-01",
             "type": "SERVE"
-        },
-        {
-            "id": 10000000030,
-            "startNode": 1008513321,
-            "endNode": 94694333,
-            "label": "职务:监事",
-            "starDate": "2014-02-01",
-            "type": "SERVE"
-        },
-        {
-            "id": 10000000031,
-            "startNode": 1001773535,
-            "endNode": 94694333,
-            "label": "职务:董事",
-            "starDate": "2014-02-01",
-            "type": "SERVE"
         }
     ],
     "nodes": [
         {
-            "id": 94694336,
-            "name": "深圳华为技术有限公司",
+            "id": 372950,
+            "name": "河北信息产业股份有限公司",
             "ntype": "Company"
         },
         {
@@ -135,8 +129,8 @@
             "ntype": "Company"
         },
         {
-            "id": 372950,
-            "name": "河北信息产业股份有限公司",
+            "id": 116035781,
+            "name": "深圳华远电信有限公司",
             "ntype": "Company"
         },
         {
@@ -147,11 +141,6 @@
         {
             "id": 1000054620,
             "name": "张凯",
-            "ntype": "Human"
-        },
-        {
-            "id": 1000164506,
-            "name": "许琳",
             "ntype": "Human"
         },
         {
@@ -177,16 +166,6 @@
         {
             "id": 1000061617,
             "name": "韩景文",
-            "ntype": "Human"
-        },
-        {
-            "id": 1008513321,
-            "name": "惠椿",
-            "ntype": "Human"
-        },
-        {
-            "id": 1001773535,
-            "name": "石光浩",
             "ntype": "Human"
         }
     ]

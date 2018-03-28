@@ -51,7 +51,6 @@ function initCanvas(companyId) {
     // 116035781    深圳华远电信有限公司
 
     var relLabels = ['SERVE', 'INVEST_C', 'OWN', 'TELPHONE', 'INVEST_C', 'BANK', 'HOUSEHOLD_A', 'HOUSEHOLD_B'];
-    var mockIds = [372950, 94694333, 94694335, 116035781];
     companyId = 372950;
 
     // var url = '../js/config/data/timeline.json';
@@ -59,8 +58,8 @@ function initCanvas(companyId) {
     //     companyId: companyId
     // });
 
-    var url = './data/relations.final.json';
-    // var url = './data/relations.init.json';
+    // var url = './data/relations.final.json';
+    var url = './data/relations.init.json';
 
     // var url = './data/sub/relatison.contact.json';
     // var url = './data/sub/relations.busine.json';
@@ -455,11 +454,11 @@ function initCanvas(companyId) {
             })
             .call(drag);
 
-        // // 数据流小球比例尺
-        // flowScale = setFlowScale(graph);
+        // 数据流小球比例尺
+        flowScale = setFlowScale(graph);
 
-        // // 选中画布范围
-        // brushHandle(graph);
+        // 选中画布范围
+        brushHandle(graph);
 
         // 关闭 loading 动画
         requestAnimationFrame(function () {
@@ -547,30 +546,30 @@ function initCanvas(companyId) {
         // console.log(edges_data);
 
         // getDirectRelsById(0, useableRels, nodesMap);
-        // getRelationsByType([], useableRels, nodesMap);
+        // getRelsByType([], useableRels, nodesMap);
+        // getRelsBetweenIds([], useableRels, nodesMap);
 
         return { nodes_data, edges_data };
     }
 
-    // 获取节点的直接关系
-    function getDirectRelsById(currNode, useableRels, nodesMap) {
-        // 获取节点的直接关系
-        // currNode = 372950; // 河北信息产业股份有限公司
-        // currNode = 94694333; // 河北华为通信技术有限责任公司
-        currNode = 94694335 // 河北省电话设备厂
-        // currNode = 116035781; // 深圳华远电信有限公司
+    // 获取直接关系
+    function getDirectRelsById(nodeId, useableRels, nodesMap) {
+        // nodeId = 372950; // 河北信息产业股份有限公司
+        // nodeId = 94694333; // 河北华为通信技术有限责任公司
+        // nodeId = 94694335 // 河北省电话设备厂
+        nodeId = 116035781; // 深圳华远电信有限公司
 
         const uniqueMap = new Map();
         const directRels = useableRels.reduce(function (rels, curr) {
             const { relations, nodes } = rels;
             const { startNode, endNode } = curr;
-            if (startNode === currNode || endNode === currNode) {
+            if (startNode === nodeId || endNode === nodeId) {
                 relations.push(curr);
-                if (!uniqueMap.has(startNode) /*&& (startNode !== currNode)*/) {
+                if (!uniqueMap.has(startNode) /*&& (startNode !== nodeId)*/) {
                     nodes.push(nodesMap[startNode]);
                     uniqueMap.set(startNode, 1);
                 }
-                if (!uniqueMap.has(endNode) /*&& (endNode !== currNode)*/) {
+                if (!uniqueMap.has(endNode) /*&& (endNode !== nodeId)*/) {
                     nodes.push(nodesMap[endNode]);
                     uniqueMap.set(endNode, 1);
                 }
@@ -584,19 +583,19 @@ function initCanvas(companyId) {
     }
 
     // 获取指定类型的关系
-    function getRelationsByType(rType, useableRels, nodesMap) {
-        rType = ['INVEST_C'];
+    function getRelsByType(rType, useableRels, nodesMap) {
+        rType = ['BANK'];
         const uniqueMap = new Map();
         const typeRels = useableRels.reduce(function (rels, curr) {
             const { relations, nodes } = rels;
             const { startNode, endNode, type } = curr;
             if (rType.includes(type)) {
                 relations.push(curr);
-                if (!uniqueMap.has(startNode) /*&& (startNode !== currNode)*/) {
+                if (!uniqueMap.has(startNode) /*&& (startNode !== nodeId)*/) {
                     nodes.push(nodesMap[startNode]);
                     uniqueMap.set(startNode, 1);
                 }
-                if (!uniqueMap.has(endNode) /*&& (endNode !== currNode)*/) {
+                if (!uniqueMap.has(endNode) /*&& (endNode !== nodeId)*/) {
                     nodes.push(nodesMap[endNode]);
                     uniqueMap.set(endNode, 1);
                 }
@@ -609,7 +608,37 @@ function initCanvas(companyId) {
         return typeRels;
     }
 
+    // 获取多节点之间关系
+    function getRelsBetweenIds(nodeIds, useableRels, nodesMap) {
+        // 1000055424 // 张凯
+        // 1000054620 // 李虹
+        // 1000572142 // 陈朝
+        nodeIds = [1000055424, 1000054620, 1000572142];
+        const nodesArr = permutation(nodeIds);
+        const uniqueMap = new Map();
+        const directRels = useableRels.reduce(function (rels, curr) {
+            const { relations, nodes } = rels;
+            const { startNode, endNode } = curr;
+            for (const [n1, n2] of nodesArr) {
+                if ((startNode === n1 && endNode === n2) || (startNode === n2 && endNode === n1)) {
+                    relations.push(curr);
+                    if (!uniqueMap.has(startNode)) {
+                        nodes.push(nodesMap[startNode]);
+                        uniqueMap.set(startNode, 1);
+                    }
+                    if (!uniqueMap.has(endNode)) {
+                        nodes.push(nodesMap[endNode]);
+                        uniqueMap.set(endNode, 1);
+                    }
+                }
+            }
+            return rels;
+        }, { relations: [], nodes: [] });
 
+        console.log(JSON.stringify(directRels));
+
+        return directRels;
+    }
 
     /**
      * 绘制时间轴工具条
@@ -789,7 +818,7 @@ function initCanvas(companyId) {
                         <div class="menu-circle">
                             <div class="menu-ring ${isMulti ? 'multiple-menu' : 'single-menu'}">
                                 <a class="menuItem fa fa-share-alt icon-white"></a>
-                                <a id="menu_btn_findRelations" class="menuItem fa fa-search icon-white multiple-btn"></a>
+                                <!--<a id="menu_btn_findRelations" class="menuItem fa fa-search icon-white multiple-btn"></a>-->
                                 <a id="menu_btn_findDeepRelations" class="menuItem fa fa-search-plus icon-white multiple-btn"></a>
                                 <a id="menu_btn_trash" class="menuItem fa fa-trash icon-white "></a>
                                 <a id="menu_btn_toggleSelection" class="menuItem fa fa-th-list icon-white single-btn"></a>
@@ -1007,6 +1036,40 @@ function initCanvas(companyId) {
     // 获取深层节点关系
     function findDeepNR(ids, graph) {
         console.log('获取深层节点关系', ids);
+        const url = './data/sub/between.' + ids + '.json';
+        const addNR = (_graph) => {
+            const { relations, nodes } = _graph;
+            graph.relations = [...graph.relations, ...relations];
+            graph.nodes = [...graph.nodes, ...nodes];
+            return graph;
+        };
+
+        var _graph = updateCache.get(url);
+        if (_graph) {
+            // --> 渲染力学图
+            requestAnimationFrame(function () {
+                update(addNR(_graph), ids);
+            });
+            return;
+        }
+
+        d3.json(url, function (error, _graph) {
+            if (error) {
+                toggleMask(false);
+                return console.error(error);
+            }
+            if (typeof _graph === 'string') {
+                try {
+                    _graph = JSON.parse(_graph);
+                } catch (error) {
+                    toggleMask(false);
+                    console.error('无法解析 JOSN 格式！', url);
+                    return;
+                }
+            }
+            updateCache.set(url, _graph);
+            update(addNR(_graph), ids);
+        });
 
     }
 
@@ -1305,6 +1368,28 @@ function initCanvas(companyId) {
                 loadingMask.style.cssText = 'display: none';
             }
         }
+    }
+
+    /**
+     * 组合排列
+     *  [1, 2, 3] => [[1, 2], [1, 3], [2, 3]]
+     * @param {Array} arr 
+     * @param {number} size 
+     */
+    function permutation(arr, size = 2) {
+        const ret = [];
+
+        (function fn(target, source, size) {
+            if (size === 0) { // 退出递归
+                ret[ret.length] = target;
+                return ret;
+            }
+            for (let i = 0; i <= (source.length - size); i++) {
+                fn([...target, source[i]], source.slice(i + 1), size - 1);
+            }
+        })([], arr, size);
+
+        return ret;
     }
 
     // // 切换拖动/选取

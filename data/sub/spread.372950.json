@@ -1,32 +1,23 @@
 {
-    "nodes": [
-        {
-            "id": 372950,
-            "name": "河北信息产业股份有限公司",
-            "ntype": "Company"
-        },
-        {
-            "id": 94694333,
-            "name": "河北华为通信技术有限责任公司",
-            "ntype": "Company"
-        },
-        {
-            "id": 94694335,
-            "name": "河北省电话设备厂",
-            "ntype": "Company"
-        },
-        {
-            "id": 1000054620,
-            "name": "张凯",
-            "ntype": "Human"
-        },
-        {
-            "id": 1000055424,
-            "name": "李虹",
-            "ntype": "Human"
-        }
-    ],
     "relations": [
+        {
+            "id": 19800,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "starDate": "2012-03-18",
+            "label": "会议用车1.8万元整",
+            "type": "BANK",
+            "amout": 18000
+        },
+        {
+            "id": 19900,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "starDate": "2013-06-10",
+            "label": "设备维护30万元整",
+            "type": "BANK",
+            "amout": 3000000
+        },
         {
             "id": 10000000003,
             "startNode": 94694335,
@@ -37,6 +28,24 @@
             "amout": 500000
         },
         {
+            "id": 19901,
+            "startNode": 372950,
+            "endNode": 94694333,
+            "starDate": "2014-08-08",
+            "label": "团建费用15万元整",
+            "type": "BANK",
+            "amout": 150000
+        },
+        {
+            "id": 19902,
+            "startNode": 372950,
+            "endNode": 94694333,
+            "starDate": "2015-01-23",
+            "label": "人事管理系统建设一期500万元整",
+            "type": "BANK",
+            "amout": 5000000
+        },
+        {
             "id": 10000000004,
             "startNode": 372950,
             "endNode": 94694333,
@@ -44,6 +53,22 @@
             "starDate": "2012-06-18",
             "type": "INVEST_C",
             "amout": 500000
+        },
+        {
+            "id": 10000000007,
+            "startNode": 1000572142,
+            "endNode": 372950,
+            "label": "法人",
+            "starDate": "2014-05-14",
+            "type": "OWN"
+        },
+        {
+            "id": 10000000019,
+            "startNode": 1000572142,
+            "endNode": 372950,
+            "label": "职务:董事长",
+            "starDate": "2008-09-22",
+            "type": "SERVE"
         },
         {
             "id": 10000000010,
@@ -59,6 +84,14 @@
             "endNode": 372950,
             "label": "职务:董事",
             "starDate": "2010-09-22",
+            "type": "SERVE"
+        },
+        {
+            "id": 10000000014,
+            "startNode": 1000055424,
+            "endNode": 372950,
+            "label": "职务:董事",
+            "starDate": "2012-05-13",
             "type": "SERVE"
         },
         {
@@ -84,14 +117,38 @@
             "label": "法人",
             "starDate": "2015-07-22",
             "type": "OWN"
+        }
+    ],
+    "nodes": [
+        {
+            "id": 94694335,
+            "name": "河北省电话设备厂",
+            "ntype": "Company"
         },
         {
-            "id": 10000000014,
-            "startNode": 1000055424,
-            "endNode": 372950,
-            "label": "职务:董事",
-            "starDate": "2012-05-13",
-            "type": "SERVE"
+            "id": 372950,
+            "name": "河北信息产业股份有限公司",
+            "ntype": "Company"
+        },
+        {
+            "id": 94694333,
+            "name": "河北华为通信技术有限责任公司",
+            "ntype": "Company"
+        },
+        {
+            "id": 1000572142,
+            "name": "陈朝",
+            "ntype": "Human"
+        },
+        {
+            "id": 1000054620,
+            "name": "张凯",
+            "ntype": "Human"
+        },
+        {
+            "id": 1000055424,
+            "name": "李虹",
+            "ntype": "Human"
         }
     ]
 }

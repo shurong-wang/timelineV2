@@ -1,22 +1,58 @@
 {
     "relations": [
         {
-            "id": 19800000000,
+            "id": 19800,
             "startNode": 94694335,
             "endNode": 372950,
-            "starDate": "2006-03-18",
-            "label": "银行转账 500 万元整",
+            "starDate": "2012-03-18",
+            "label": "会议用车1.8万元整",
+            "type": "BANK",
+            "amout": 18000
+        },
+        {
+            "id": 19900,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "starDate": "2013-06-10",
+            "label": "设备维护30万元整",
+            "type": "BANK",
+            "amout": 3000000
+        },
+        {
+            "id": 19901,
+            "startNode": 372950,
+            "endNode": 94694333,
+            "starDate": "2014-08-08",
+            "label": "团建费用15万元整",
+            "type": "BANK",
+            "amout": 150000
+        },
+        {
+            "id": 19902,
+            "startNode": 372950,
+            "endNode": 94694333,
+            "starDate": "2015-01-23",
+            "label": "人事管理系统建设一期500万元整",
             "type": "BANK",
             "amout": 5000000
         },
         {
-            "id": 19900000000,
+            "id": 19803,
             "startNode": 94694335,
-            "endNode": 372950,
-            "starDate": "2006-06-10",
-            "label": "银行转账 300 万元整",
+            "endNode": 1000572142,
+            "starDate": "2017-04-02",
+            "label": "转账250万元整",
             "type": "BANK",
-            "amout": 3000000
+            "amout": 2500000
+        },
+        {
+            "id": 19804,
+            "startNode": 94694335,
+            "endNode": 1000572142,
+            "starDate": "2018-03-02",
+            "label": "转账50万元整",
+            "type": "BANK",
+            "amout": 500000
         }
     ],
     "nodes": [
@@ -29,6 +65,16 @@
             "id": 372950,
             "name": "河北信息产业股份有限公司",
             "ntype": "Company"
+        },
+        {
+            "id": 94694333,
+            "name": "河北华为通信技术有限责任公司",
+            "ntype": "Company"
+        },
+        {
+            "id": 1000572142,
+            "name": "陈朝",
+            "ntype": "Human"
         }
     ]
 }

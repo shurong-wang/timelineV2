@@ -52,14 +52,15 @@ function initCanvas(companyId) {
 
     var relLabels = ['SERVE', 'INVEST_C', 'OWN', 'TELPHONE', 'INVEST_C', 'BANK', 'HOUSEHOLD_A', 'HOUSEHOLD_B'];
     companyId = 372950;
+    COMPANY_ID = companyId;
 
     // var url = '../js/config/data/timeline.json';
     // var url = api('getTimeLine', {
-    //     companyId: companyId
+    //     companyId: COMPANY_ID
     // });
 
-    // var url = './data/relations.final.json';
-    var url = './data/relations.init.json';
+    var url = './data/relations.final.json';
+    // var url = './data/relations.init.json';
 
     // var url = './data/sub/relatison.contact.json';
     // var url = './data/sub/relations.busine.json';
@@ -265,7 +266,7 @@ function initCanvas(companyId) {
                 nCircle = nodesG.append('circle')
                     .attr('class', 'n-circle')
                     .attr(NODE_STYLE[d.ntype])
-                    .classed('curr', d => d.id === companyId);
+                    .classed('curr', d => d.id === COMPANY_ID);
 
                 // 节点文字
                 nText = nodesG.append('text')
@@ -309,7 +310,7 @@ function initCanvas(companyId) {
             })
             .on('dblclick', function (d) {
                 d3.select(this).classed('fixed', d.fixed = false);
-                d.open === false ? openNR([d.id], graph) : closeNR([d.id], graph);
+                d.open ? closeNR([d.id], graph) : openNR([d.id], graph);
             })
             .call(drag);
 
@@ -406,7 +407,7 @@ function initCanvas(companyId) {
                 nCircle = nodesG.append('circle')
                     .attr('class', 'n-circle')
                     .attr(NODE_STYLE[d.ntype])
-                    .classed('curr', d => d.id === companyId);
+                    .classed('curr', d => d.id === COMPANY_ID);
 
                 // 节点文字
                 nText = nodesG.append('text')
@@ -456,9 +457,6 @@ function initCanvas(companyId) {
 
         // 数据流小球比例尺
         flowScale = setFlowScale(graph);
-
-        // 选中画布范围
-        brushHandle(graph);
 
         // 关闭 loading 动画
         requestAnimationFrame(function () {
@@ -992,9 +990,11 @@ function initCanvas(companyId) {
     function closeNR(ids, graph) {
         console.log('收起子关系节点', ids);
         const [id] = ids;
-        if (id === companyId) {
+
+        // 全部收起
+        if (id === COMPANY_ID) {
             graph.relations = [];
-            graph.nodes = graph.nodes.filter(({ id }) => id === companyId);
+            graph.nodes = graph.nodes.filter(({ id }) => id === COMPANY_ID);
             toggleNR(id, graph, false);
             // 更新画图数据
             update(graph, ids);
@@ -1003,7 +1003,7 @@ function initCanvas(companyId) {
 
         const closeNSet = new Set();
         graph.relations = graph.relations.filter(({ startNode, endNode }) => {
-            const isCloseRe = (startNode === id || endNode === id) && (endNode !== companyId && startNode !== companyId);
+            const isCloseRe = (startNode === id || endNode === id) && (endNode !== COMPANY_ID && startNode !== COMPANY_ID);
             if (isCloseRe) {
                 closeNSet.add(startNode);
                 closeNSet.add(endNode);

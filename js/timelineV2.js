@@ -61,13 +61,12 @@ function initCanvas(companyId) {
     //     companyId: COMPANY_ID
     // });
 
-    // var url = './data/relations.final.json';
+    var url = './data/relations.final.json';
     // var url = './data/relations.init.json';
 
     // var url = './data/sub/relations.busine.json';
     // var url = './data/sub/relations.bank.json';
     // var url = './data/sub/relations.contact.json';
-    var url = './data/sub/relations.flow.json';
     // var url = './data/sub/relations.household.json';
 
     var ticking = false;
@@ -548,7 +547,7 @@ function initCanvas(companyId) {
         // console.log(edges_data);
 
         // getDirectRelsById(0, graph.relations, nodesMap);
-        getRelsByType([], graph.relations, nodesMap);
+        // getRelsByType([], graph.relations, nodesMap);
         // getRelsBetweenIds([], graph.relations, nodesMap);
 
         return { nodes_data, edges_data };
@@ -1342,23 +1341,16 @@ function initCanvas(companyId) {
         activeLinks.each(function () {
             var m = 0;
             var activeLink = d3.select(this);
+            var activeLines = activeLink.selectAll('line');
+            var flowLines = activeLines.filter(d => ['TELPHONE', 'BANK'].includes(d.type));
 
-            var flowLines = activeLink.selectAll('line').filter(function (d) {
-                return (!d.disuse) && (['TELPHONE', 'BANK'].includes(d.type));
-            });
-            
-            flowLines.each(function (d, k) {
-                console.log(d);
-                
-                d.flow = activeLink.append('circle')
-                    .attr('class', 'flow')
-                    .attr('r', v => flowScale(v.lines[k].amout) || 4)
-                    .style('fill', v => {
-
-                        console.log(v);
-                        
-                        return RELATION_COLOURS[v.lines[k].type];
-                    });
+            activeLines.each(function (d, k) {
+                if (['TELPHONE', 'BANK'].includes(d.type)) {
+                    d.flow = activeLink.append('circle')
+                        .attr('class', 'flow')
+                        .attr('r', flowScale(d.amout || 1))
+                        .style('fill', RELATION_COLOURS[d.type]);
+                }
             });
 
             flowAnim.start(function () {
@@ -1374,7 +1366,7 @@ function initCanvas(companyId) {
                         d.flow.attr('cx', x).attr('cy', y);
                     }
                 });
-                m ++;
+                m++;
             }, 90);
         });
 

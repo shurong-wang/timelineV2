@@ -50,8 +50,8 @@ TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
         return;
     }
 
-    var startDate = new Date(this.minDt.getTime() - 25920000000);
-    var endDate = new Date(this.maxDt.getTime() + 25920000000);
+    var startDate = new Date(this.minDt.getTime() - 30 * 24 * 60 * 60);
+    var endDate = new Date(this.maxDt.getTime() + 30 * 24 * 60 * 60);
     var xDomain = this.x && !callback ? this.x.domain() : [startDate, endDate];
     var xRange = [this.groupWidth, this.width];
 
@@ -325,7 +325,6 @@ TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
 
     this.groupDotItems = this._groupBarItems.enter();
 
-    // --- todo 以下代码报错 --- //
     this.groupDotItems.append('rect')
         .attr('class', this.withCustom('bar'))
         .attr('x', function (d) {

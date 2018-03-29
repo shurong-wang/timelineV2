@@ -4,7 +4,7 @@
             "id": 33000000000,
             "startNode": 1000687991,
             "endNode": 1000055424,
-            "starDate": "1987-02-43",
+            "starDate": "1987-02-14",
             "label": "关系:之夫",
             "type": "HOUSEHOLD_A"
         },
@@ -12,7 +12,7 @@
             "id": 34000000000,
             "startNode": 1000055424,
             "endNode": 1000687991,
-            "starDate": "1987-02-43",
+            "starDate": "1987-02-14",
             "label": "关系:之妻",
             "type": "HOUSEHOLD_B"
         }

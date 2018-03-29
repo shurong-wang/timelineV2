@@ -23,7 +23,7 @@
             "startNode": 1000572142,
             "endNode": 372950,
             "label": "法人",
-            "starDate": "2014-05-14",
+            "starDate": "1995-09-18",
             "type": "OWN"
         },
         {
@@ -39,7 +39,7 @@
             "startNode": 1000687991,
             "endNode": 94694333,
             "label": "法人",
-            "starDate": "2014-07-22",
+            "starDate": "1992-07-21",
             "type": "OWN"
         },
         {
@@ -63,7 +63,7 @@
             "startNode": 1000049591,
             "endNode": 116035781,
             "label": "职务:董事长",
-            "starDate": "2014-02-01",
+            "starDate": "2001-12-20",
             "type": "SERVE"
         },
         {
@@ -119,7 +119,7 @@
             "startNode": 1000055424,
             "endNode": 372950,
             "label": "投资",
-            "starDate": "2014-10-15",
+            "starDate": "1998-04-30",
             "type": "INVEST_H"
         },
         {
@@ -143,7 +143,7 @@
             "startNode": 1000042649,
             "endNode": 94694333,
             "label": "职务:董事",
-            "starDate": "2014-05-11",
+            "starDate": "1995-06-03",
             "type": "SERVE"
         },
         {
@@ -159,7 +159,7 @@
             "startNode": 1000061617,
             "endNode": 94694333,
             "label": "职务:董事",
-            "starDate": "2014-02-01",
+            "starDate": "2001-12-20",
             "type": "SERVE"
         },
         {
@@ -167,7 +167,7 @@
             "startNode": 1000101471,
             "endNode": 116035781,
             "label": "职务:副董事长",
-            "starDate": "2014-02-01",
+            "starDate": "2001-12-20",
             "type": "SERVE"
         },
         {
@@ -175,7 +175,7 @@
             "startNode": 1000235289,
             "endNode": 116035781,
             "label": "职务:副总经理",
-            "starDate": "2014-02-01",
+            "starDate": "2001-12-20",
             "type": "SERVE"
         },
         {
@@ -183,7 +183,7 @@
             "startNode": 1000111648,
             "endNode": 116035781,
             "label": "职务:副总经理",
-            "starDate": "2014-02-01",
+            "starDate": "2001-12-20",
             "type": "SERVE"
         }
     ],

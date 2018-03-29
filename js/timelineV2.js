@@ -501,15 +501,16 @@ function initCanvas(companyId) {
             return map;
         }, {});
 
-        // 提取可用关系（过滤掉起始节点或目标节点缺失的关系）
-        const useableRels = Object.values(relsMap).reduce(function (rels, { lines }) {
+        // 节点去重
+        graph.nodes = [...Object.values(nodesMap)];
+
+        // 关系去重
+        graph.relations = Object.values(relsMap).reduce(function (rels, { lines }) {
             return [...rels, ...lines];
         }, []);
 
-        // 节点去重
-        const nodes_data = [...Object.values(nodesMap)];
-
-        // 关系过滤
+        // 构建 force 数据
+        const nodes_data = [...graph.nodes];
         const edges_data = Object.entries(relsMap).reduce(function (edges, [k, v]) {
             const [startNode, endNode] = k.split(',');
             if (nodesMap[startNode] && nodesMap[endNode]) {
@@ -543,9 +544,9 @@ function initCanvas(companyId) {
 
         // console.log(edges_data);
 
-        // getDirectRelsById(0, useableRels, nodesMap);
-        // getRelsByType([], useableRels, nodesMap);
-        // getRelsBetweenIds([], useableRels, nodesMap);
+        // getDirectRelsById(0, graph.relations, nodesMap);
+        // getRelsByType([], graph.relations, nodesMap);
+        // getRelsBetweenIds([], graph.relations, nodesMap);
 
         return { nodes_data, edges_data };
     }
@@ -1001,20 +1002,45 @@ function initCanvas(companyId) {
             return;
         }
 
-        const closeNSet = new Set();
-        graph.relations = graph.relations.filter(({ startNode, endNode }) => {
-            const isCloseRe = (startNode === id || endNode === id) && (endNode !== COMPANY_ID && startNode !== COMPANY_ID);
-            if (isCloseRe) {
-                closeNSet.add(startNode);
-                closeNSet.add(endNode);
+        // 直接关系
+        const directRels = graph.relations.filter(({ startNode, endNode }) => startNode === id || endNode === id);
+        
+        // 直接节点
+        const directNodes = directRels.reduce((set, { startNode, endNode }) => {
+            if (startNode !== id) {
+                set.add(startNode);
             }
-            return !isCloseRe;
-        });
-        closeNSet.delete(id);
+            if (endNode !== id) {
+                set.add(endNode);
+            }
+            return set;
+        }, new Set());
+        // 关闭节点
+        const closeNodes = graph.relations.reduce((set, { startNode, endNode }) => {
+            if (startNode !== id && endNode !== id) {
+                if (directNodes.has(startNode)) {
+                    set.delete(startNode);
+                }
+                if (directNodes.has(endNode)) {
+                    set.delete(endNode);
+                }
+            }
+            return set;
+        }, directNodes);
 
-        graph.nodes = graph.nodes.filter(({ id }) => {
-            return !closeNSet.has(id);
+        // 过滤关系
+        graph.relations = graph.relations.filter(({ startNode, endNode }) => {
+            return !(
+                (startNode === id && closeNodes.has(endNode))
+                || (endNode === id && closeNodes.has(startNode))
+            );
         });
+
+        // 过滤节点
+        graph.nodes = graph.nodes.filter(({ id }) => {
+            return !closeNodes.has(id);
+        });
+
         toggleNR(id, graph, false);
 
         // 更新画图数据

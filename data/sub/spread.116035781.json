@@ -1,24 +1,6 @@
 {
     "relations": [
         {
-            "id": 10000000001,
-            "startNode": 94694333,
-            "endNode": 116035781,
-            "label": "投资",
-            "starDate": "2007-07-21",
-            "type": "INVEST_C",
-            "amout": 50000
-        },
-        {
-            "id": 10000000006,
-            "startNode": 112520475,
-            "endNode": 116035781,
-            "label": "投资",
-            "starDate": "2009-08-10",
-            "type": "INVEST_C",
-            "amout": 50000000
-        },
-        {
             "id": 10000000009,
             "startNode": 1000049591,
             "endNode": 116035781,
@@ -57,28 +39,45 @@
             "label": "职务:副总经理",
             "starDate": "2014-02-01",
             "type": "SERVE"
+        },
+        {
+            "id": 10000000001,
+            "startNode": 116035781,
+            "endNode": 372950,
+            "label": "会议费用9.6万元",
+            "starDate": "2014-03-25",
+            "type": "BANK",
+            "amout": 96000
+        },
+        {
+            "id": 1330001,
+            "startNode": 116035781,
+            "endNode": 372950,
+            "label": "咨询费用78.4万元",
+            "starDate": "2016-05-06",
+            "type": "BANK",
+            "amout": 7840000
+        },
+        {
+            "id": 1330002,
+            "startNode": 116035781,
+            "endNode": 372950,
+            "label": "转账150万元整",
+            "starDate": "2011-12-13",
+            "type": "BANK",
+            "amout": 1500000
         }
     ],
     "nodes": [
         {
-            "id": 94694333,
-            "name": "河北华为通信技术有限责任公司",
-            "ntype": "Company"
+            "id": 1000049591,
+            "name": "张燕燕",
+            "ntype": "Human"
         },
         {
             "id": 116035781,
             "name": "深圳华远电信有限公司",
             "ntype": "Company"
-        },
-        {
-            "id": 112520475,
-            "name": "香港昌兴公司",
-            "ntype": "Company"
-        },
-        {
-            "id": 1000049591,
-            "name": "张燕燕",
-            "ntype": "Human"
         },
         {
             "id": 1000101471,
@@ -94,6 +93,11 @@
             "id": 1000111648,
             "name": "段志刚",
             "ntype": "Human"
+        },
+        {
+            "id": 372950,
+            "name": "河北信息产业股份有限公司",
+            "ntype": "Company"
         }
     ]
 }

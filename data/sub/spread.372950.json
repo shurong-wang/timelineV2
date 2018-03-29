@@ -1,6 +1,15 @@
 {
     "relations": [
         {
+            "id": 10000000003,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "label": "投资",
+            "starDate": "2011-09-15",
+            "type": "INVEST_C",
+            "amout": 500000
+        },
+        {
             "id": 19800,
             "startNode": 94694335,
             "endNode": 372950,
@@ -19,11 +28,11 @@
             "amout": 3000000
         },
         {
-            "id": 10000000003,
-            "startNode": 94694335,
-            "endNode": 372950,
+            "id": 10000000004,
+            "startNode": 372950,
+            "endNode": 94694333,
             "label": "投资",
-            "starDate": "2011-09-15",
+            "starDate": "2012-06-18",
             "type": "INVEST_C",
             "amout": 500000
         },
@@ -44,15 +53,6 @@
             "label": "人事管理系统建设一期500万元整",
             "type": "BANK",
             "amout": 5000000
-        },
-        {
-            "id": 10000000004,
-            "startNode": 372950,
-            "endNode": 94694333,
-            "label": "投资",
-            "starDate": "2012-06-18",
-            "type": "INVEST_C",
-            "amout": 500000
         },
         {
             "id": 10000000007,
@@ -87,7 +87,7 @@
             "type": "SERVE"
         },
         {
-            "id": 10000000014,
+            "id": 10000014,
             "startNode": 1000055424,
             "endNode": 372950,
             "label": "职务:董事",
@@ -95,28 +95,66 @@
             "type": "SERVE"
         },
         {
-            "id": 11000000010,
-            "startNode": 1000054620,
-            "endNode": 94694333,
-            "label": "职务:总经理",
-            "starDate": "2016-05-13",
-            "type": "SERVE"
+            "id": 10000019,
+            "startNode": 1000055424,
+            "endNode": 372950,
+            "label": "投资",
+            "starDate": "2014-10-15",
+            "type": "INVEST_H"
         },
         {
-            "id": 11000000022,
-            "startNode": 1000054620,
-            "endNode": 94694333,
-            "label": "职务:董事",
-            "starDate": "2017-09-22",
-            "type": "SERVE"
+            "id": 10000000001,
+            "startNode": 116035781,
+            "endNode": 372950,
+            "label": "会议费用9.6万元",
+            "starDate": "2014-03-25",
+            "type": "BANK",
+            "amout": 96000
         },
         {
-            "id": 11000000008,
-            "startNode": 1000054620,
-            "endNode": 94694333,
-            "label": "法人",
-            "starDate": "2015-07-22",
-            "type": "OWN"
+            "id": 1330001,
+            "startNode": 116035781,
+            "endNode": 372950,
+            "label": "咨询费用78.4万元",
+            "starDate": "2016-05-06",
+            "type": "BANK",
+            "amout": 7840000
+        },
+        {
+            "id": 1330002,
+            "startNode": 116035781,
+            "endNode": 372950,
+            "label": "转账150万元整",
+            "starDate": "2011-12-13",
+            "type": "BANK",
+            "amout": 1500000
+        },
+        {
+            "id": 140006,
+            "startNode": 112520475,
+            "endNode": 372950,
+            "label": "会议费用3.8万元",
+            "starDate": "2007-09-19",
+            "type": "BANK",
+            "amout": 38000
+        },
+        {
+            "id": 140007,
+            "startNode": 112520475,
+            "endNode": 372950,
+            "label": "转账270万元整",
+            "starDate": "2002-07-16",
+            "type": "BANK",
+            "amout": 2700000
+        },
+        {
+            "id": 145005,
+            "startNode": 112520475,
+            "endNode": 372950,
+            "label": "综合楼空调25.7万元",
+            "starDate": "2012-08-10",
+            "type": "BANK",
+            "amout": 257000
         }
     ],
     "nodes": [
@@ -149,6 +187,16 @@
             "id": 1000055424,
             "name": "李虹",
             "ntype": "Human"
+        },
+        {
+            "id": 116035781,
+            "name": "深圳华远电信有限公司",
+            "ntype": "Company"
+        },
+        {
+            "id": 112520475,
+            "name": "香港昌兴公司",
+            "ntype": "Company"
         }
     ]
 }

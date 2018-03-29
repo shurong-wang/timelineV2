@@ -93,69 +93,6 @@
     ],
     "relations": [
         {
-            "id": 19800,
-            "startNode": 94694335,
-            "endNode": 372950,
-            "starDate": "2012-03-18",
-            "label": "会议用车1.8万元整",
-            "type": "BANK",
-            "amout": 18000
-        },
-        {
-            "id": 19900,
-            "startNode": 94694335,
-            "endNode": 372950,
-            "starDate": "2013-06-10",
-            "label": "设备维护30万元整",
-            "type": "BANK",
-            "amout": 3000000
-        },
-        {
-            "id": 19901,
-            "startNode": 372950,
-            "endNode": 94694333,
-            "starDate": "2014-08-08",
-            "label": "团建费用15万元整",
-            "type": "BANK",
-            "amout": 150000
-        },
-        {
-            "id": 19902,
-            "startNode": 372950,
-            "endNode": 94694333,
-            "starDate": "2015-01-23",
-            "label": "人事管理系统建设一期500万元整",
-            "type": "BANK",
-            "amout": 5000000
-        },
-        {
-            "id": 19803,
-            "startNode": 94694335,
-            "endNode": 1000572142,
-            "starDate": "2017-04-02",
-            "label": "转账250万元整",
-            "type": "BANK",
-            "amout": 2500000
-        },
-        {
-            "id": 19804,
-            "startNode": 94694335,
-            "endNode": 1000572142,
-            "starDate": "2018-03-02",
-            "label": "转账50万元整",
-            "type": "BANK",
-            "amout": 500000
-        },
-        {
-            "id": 10000000001,
-            "startNode": 94694333,
-            "endNode": 116035781,
-            "label": "投资",
-            "starDate": "2007-07-21",
-            "type": "INVEST_C",
-            "amout": 50000
-        },
-        {
             "id": 10000000003,
             "startNode": 94694335,
             "endNode": 372950,
@@ -172,15 +109,6 @@
             "starDate": "2012-06-18",
             "type": "INVEST_C",
             "amout": 500000
-        },
-        {
-            "id": 10000000006,
-            "startNode": 112520475,
-            "endNode": 116035781,
-            "label": "投资",
-            "starDate": "2009-08-10",
-            "type": "INVEST_C",
-            "amout": 50000000
         },
         {
             "id": 10000000007,
@@ -239,12 +167,20 @@
             "type": "OWN"
         },
         {
-            "id": 10000000014,
+            "id": 10000014,
             "startNode": 1000055424,
             "endNode": 372950,
             "label": "职务:董事",
             "starDate": "2012-05-13",
             "type": "SERVE"
+        },
+        {
+            "id": 10000019,
+            "startNode": 1000055424,
+            "endNode": 372950,
+            "label": "投资",
+            "starDate": "2014-10-15",
+            "type": "INVEST_H"
         },
         {
             "id": 10000000019,
@@ -341,6 +277,114 @@
             "label": "职务:副总经理",
             "starDate": "2014-02-01",
             "type": "SERVE"
+        },
+        {
+            "id": 19800,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "starDate": "2012-03-18",
+            "label": "会议用车1.8万元整",
+            "type": "BANK",
+            "amout": 18000
+        },
+        {
+            "id": 19900,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "starDate": "2013-06-10",
+            "label": "设备维护30万元整",
+            "type": "BANK",
+            "amout": 3000000
+        },
+        {
+            "id": 19901,
+            "startNode": 372950,
+            "endNode": 94694333,
+            "starDate": "2014-08-08",
+            "label": "团建费用15万元整",
+            "type": "BANK",
+            "amout": 150000
+        },
+        {
+            "id": 19902,
+            "startNode": 372950,
+            "endNode": 94694333,
+            "starDate": "2015-01-23",
+            "label": "人事管理系统建设一期500万元整",
+            "type": "BANK",
+            "amout": 5000000
+        },
+        {
+            "id": 19803,
+            "startNode": 94694335,
+            "endNode": 1000572142,
+            "starDate": "2017-04-02",
+            "label": "转账250万元整",
+            "type": "BANK",
+            "amout": 2500000
+        },
+        {
+            "id": 19804,
+            "startNode": 94694335,
+            "endNode": 1000572142,
+            "starDate": "2018-03-02",
+            "label": "转账50万元整",
+            "type": "BANK",
+            "amout": 500000
+        },
+        {
+            "id": 10000000001,
+            "startNode": 116035781,
+            "endNode": 372950,
+            "label": "会议费用9.6万元",
+            "starDate": "2014-03-25",
+            "type": "BANK",
+            "amout": 96000
+        },
+        {
+            "id": 1330001,
+            "startNode": 116035781,
+            "endNode": 372950,
+            "label": "咨询费用78.4万元",
+            "starDate": "2016-05-06",
+            "type": "BANK",
+            "amout": 7840000
+        },
+        {
+            "id": 1330002,
+            "startNode": 116035781,
+            "endNode": 372950,
+            "label": "转账150万元整",
+            "starDate": "2011-12-13",
+            "type": "BANK",
+            "amout": 1500000
+        },
+        {
+            "id": 140006,
+            "startNode": 112520475,
+            "endNode": 372950,
+            "label": "会议费用3.8万元",
+            "starDate": "2007-09-19",
+            "type": "BANK",
+            "amout": 38000
+        },
+        {
+            "id": 140007,
+            "startNode": 112520475,
+            "endNode": 372950,
+            "label": "转账270万元整",
+            "starDate": "2002-07-16",
+            "type": "BANK",
+            "amout": 2700000
+        },
+        {
+            "id": 145005,
+            "startNode": 112520475,
+            "endNode": 372950,
+            "label": "综合楼空调25.7万元",
+            "starDate": "2012-08-10",
+            "type": "BANK",
+            "amout": 257000
         },
         {
             "id": 110381,

@@ -1,13 +1,31 @@
 {
     "relations": [
         {
-            "id": 10000000006,
+            "id": 140006,
             "startNode": 112520475,
-            "endNode": 116035781,
-            "label": "投资",
-            "starDate": "2009-08-10",
-            "type": "INVEST_C",
-            "amout": 50000000
+            "endNode": 372950,
+            "label": "会议费用3.8万元",
+            "starDate": "2007-09-19",
+            "type": "BANK",
+            "amout": 38000
+        },
+        {
+            "id": 140007,
+            "startNode": 112520475,
+            "endNode": 372950,
+            "label": "转账270万元整",
+            "starDate": "2002-07-16",
+            "type": "BANK",
+            "amout": 2700000
+        },
+        {
+            "id": 145005,
+            "startNode": 112520475,
+            "endNode": 372950,
+            "label": "综合楼空调25.7万元",
+            "starDate": "2012-08-10",
+            "type": "BANK",
+            "amout": 257000
         }
     ],
     "nodes": [
@@ -17,8 +35,8 @@
             "ntype": "Company"
         },
         {
-            "id": 116035781,
-            "name": "深圳华远电信有限公司",
+            "id": 372950,
+            "name": "河北信息产业股份有限公司",
             "ntype": "Company"
         }
     ]

@@ -1,6 +1,15 @@
 {
     "relations": [
         {
+            "id": 10000000003,
+            "startNode": 94694335,
+            "endNode": 372950,
+            "label": "投资",
+            "starDate": "2011-09-15",
+            "type": "INVEST_C",
+            "amout": 500000
+        },
+        {
             "id": 19800,
             "startNode": 94694335,
             "endNode": 372950,
@@ -17,15 +26,6 @@
             "label": "设备维护30万元整",
             "type": "BANK",
             "amout": 3000000
-        },
-        {
-            "id": 10000000003,
-            "startNode": 94694335,
-            "endNode": 372950,
-            "label": "投资",
-            "starDate": "2011-09-15",
-            "type": "INVEST_C",
-            "amout": 500000
         },
         {
             "id": 19803,

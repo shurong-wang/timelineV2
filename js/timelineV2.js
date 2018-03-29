@@ -35,6 +35,7 @@ function initCanvas(companyId) {
     const RELATION_COLOURS = {
         TELPHONE: 'rgb(1, 194, 106)',
         SERVE: 'rgb(106, 220, 254)',
+        INVEST_H: 'rgb(141, 149, 250)',
         INVEST_C: 'rgb(141, 149, 250)',
         OWN: 'rgb(249, 225, 105)',
         BANK: 'rgb(227, 166, 0)',
@@ -49,8 +50,9 @@ function initCanvas(companyId) {
     // 94694333     河北华为通信技术有限责任公司
     // 94694335     河北省电话设备厂
     // 116035781    深圳华远电信有限公司
+    // 112520475    香港昌兴公司
 
-    var relLabels = ['SERVE', 'INVEST_C', 'OWN', 'TELPHONE', 'INVEST_C', 'BANK', 'HOUSEHOLD_A', 'HOUSEHOLD_B'];
+    var relLabels = ['SERVE', 'INVEST_C', 'INVEST_H', 'OWN', 'TELPHONE', 'BANK', 'HOUSEHOLD_A', 'HOUSEHOLD_B'];
     companyId = 372950;
     COMPANY_ID = companyId;
 
@@ -59,13 +61,14 @@ function initCanvas(companyId) {
     //     companyId: COMPANY_ID
     // });
 
-    var url = './data/relations.final.json';
+    // var url = './data/relations.final.json';
     // var url = './data/relations.init.json';
 
-    // var url = './data/sub/relatison.contact.json';
     // var url = './data/sub/relations.busine.json';
     // var url = './data/sub/relations.bank.json';
-    // var url = './data/sub/relatison.household.json';
+    // var url = './data/sub/relations.contact.json';
+    var url = './data/sub/relations.flow.json';
+    // var url = './data/sub/relations.household.json';
 
     var ticking = false;
     var isDraging = false;
@@ -545,7 +548,7 @@ function initCanvas(companyId) {
         // console.log(edges_data);
 
         // getDirectRelsById(0, graph.relations, nodesMap);
-        // getRelsByType([], graph.relations, nodesMap);
+        getRelsByType([], graph.relations, nodesMap);
         // getRelsBetweenIds([], graph.relations, nodesMap);
 
         return { nodes_data, edges_data };
@@ -553,10 +556,13 @@ function initCanvas(companyId) {
 
     // 获取直接关系
     function getDirectRelsById(nodeId, useableRels, nodesMap) {
-        // nodeId = 372950; // 河北信息产业股份有限公司
-        // nodeId = 94694333; // 河北华为通信技术有限责任公司
-        // nodeId = 94694335 // 河北省电话设备厂
-        nodeId = 116035781; // 深圳华远电信有限公司
+        // mock 数据公司 id:
+        // 372950       河北信息产业股份有限公司
+        // 94694333     河北华为通信技术有限责任公司
+        // 94694335     河北省电话设备厂
+        // 112520475    香港昌兴公司
+        // 116035781    深圳华远电信有限公司
+        nodeId = 116035781;
 
         const uniqueMap = new Map();
         const directRels = useableRels.reduce(function (rels, curr) {
@@ -583,7 +589,9 @@ function initCanvas(companyId) {
 
     // 获取指定类型的关系
     function getRelsByType(rType, useableRels, nodesMap) {
-        rType = ['BANK'];
+        // ['SERVE', 'INVEST_C', 'INVEST_H', 'OWN', 'TELPHONE', 'BANK', 'HOUSEHOLD_A', 'HOUSEHOLD_B'];
+        // rType = ['SERVE', 'INVEST_C', 'INVEST_H', 'OWN'];
+        rType = ['BANK', 'TELPHONE'];
         const uniqueMap = new Map();
         const typeRels = useableRels.reduce(function (rels, curr) {
             const { relations, nodes } = rels;
@@ -729,12 +737,12 @@ function initCanvas(companyId) {
 
         // 选中聚焦环
         selectedHalo = nodes.append('circle')
-            .attr('r', function (d) { return NODE_STYLE[d.ntype].r + 6; })
+            .attr('r', function (d) { return NODE_STYLE[d.ntype].r + 5; })
             .attr('class', 'n-halo')
             .attr('id', function (d) { return 'halo-' + d.id; })
             .style('fill', 'rgba(0,0,0,.0)')
             .style('stroke', 'rgb(0,209,218)')
-            .style('stroke-width', 3)
+            .style('stroke-width', 4)
             .classed('hidden', true);
 
         // 隐藏选中聚焦环
@@ -1004,7 +1012,7 @@ function initCanvas(companyId) {
 
         // 直接关系
         const directRels = graph.relations.filter(({ startNode, endNode }) => startNode === id || endNode === id);
-        
+
         // 直接节点
         const directNodes = directRels.reduce((set, { startNode, endNode }) => {
             if (startNode !== id) {
@@ -1336,14 +1344,21 @@ function initCanvas(companyId) {
             var activeLink = d3.select(this);
 
             var flowLines = activeLink.selectAll('line').filter(function (d) {
-                return (!d.disuse) && (['INVEST_C', 'TELPHONE', 'BANK'].includes(d.type));
+                return (!d.disuse) && (['TELPHONE', 'BANK'].includes(d.type));
             });
-
+            
             flowLines.each(function (d, k) {
+                console.log(d);
+                
                 d.flow = activeLink.append('circle')
                     .attr('class', 'flow')
-                    .attr('r', d => flowScale(d.lines[k].amout) || 5)
-                    .style('fill', d => RELATION_COLOURS[d.lines[k].type])
+                    .attr('r', v => flowScale(v.lines[k].amout) || 4)
+                    .style('fill', v => {
+
+                        console.log(v);
+                        
+                        return RELATION_COLOURS[v.lines[k].type];
+                    });
             });
 
             flowAnim.start(function () {
@@ -1359,9 +1374,10 @@ function initCanvas(companyId) {
                         d.flow.attr('cx', x).attr('cy', y);
                     }
                 });
-                m++;
+                m ++;
             }, 90);
         });
+
     }
 
     function toggleMask(isShow = true) {

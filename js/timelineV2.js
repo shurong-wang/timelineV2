@@ -76,6 +76,13 @@ function initCanvas(companyId) {
     var isBrushing = false;
     var flowAnim = new FlowAnim();
 
+    var graph;
+    var nodes_data;
+    var edges_data;
+    var nodesMap;
+    var linesMap;
+    var relsMap;
+
     var width = d3.select('#graph-main').node().clientWidth;
     var height = d3.select('#graph-main').node().clientHeight;
 
@@ -165,7 +172,7 @@ function initCanvas(companyId) {
     /** 
      * 获取画图数据 && 绘图
      */
-    var graph = timeLineCache.get(url);
+    graph = timeLineCache.get(url);
     if (graph) {
         // --> 渲染力学图
         requestAnimationFrame(function () {
@@ -188,11 +195,11 @@ function initCanvas(companyId) {
             }
             timeLineCache.set(url, graph);
 
-            // // --> 1. 绘制时间轴工具条
-            // renderBar(graph);
-
-            // --> 2. 绘制关系图 
+            // --> 1. 绘制关系图 
             renderFroce(graph);
+
+            // --> 2. 绘制时间轴工具条
+            renderBar(graph);
         });
     }
 
@@ -204,6 +211,7 @@ function initCanvas(companyId) {
     function renderFroce(graph) {
         // 生成力学图数据
         var { nodes_data, edges_data } = genForeData(graph);
+        
         // console.log('更新前_nodes：', nodes_data);
         // console.log('更新前_edges：', edges_data);
 
@@ -339,10 +347,7 @@ function initCanvas(companyId) {
             return;
         }
 
-        // // --> 1. 更新时间轴工具条
-        // renderBar(graph);
-
-        // --> 2. 更新时间关系图
+        // --> 1. 更新时间关系图
         // 更新力学图数据
         var { nodes_data, edges_data } = genForeData(graph);
         // console.log('更新后_nodes：', nodes_data);
@@ -465,6 +470,8 @@ function initCanvas(companyId) {
             toggleMask(false);
         });
 
+        // --> 2. 更新时间轴工具条
+        renderBar(graph);
     }
 
     /**
@@ -476,16 +483,16 @@ function initCanvas(companyId) {
             return { nodes_data: [], edges_data: [] };
         }
 
-        const nodesMap = graph.nodes.reduce(function (map, curr) {
+        nodesMap = graph.nodes.reduce(function (map, curr) {
             if (!map[curr.id]) {
                 map[curr.id] = curr;
             }
             return map;
         }, {});
 
-        const linesMap = {}; // 关系连线 -- 两个节点间可以有多条连线
+        linesMap = {}; // 关系连线 -- 两个节点间可以有多条连线
 
-        const relsMap = graph.relations.reduce(function (map, curr) {
+        relsMap = graph.relations.reduce(function (map, curr) {
             const { startNode, endNode, id } = curr;
 
             const k = [startNode, endNode];
@@ -511,9 +518,11 @@ function initCanvas(companyId) {
             return [...rels, ...lines];
         }, []);
 
+        // console.log('graph', graph);
+
         // 构建 force 数据
-        const nodes_data = [...graph.nodes];
-        const edges_data = Object.entries(relsMap).reduce(function (edges, [k, v]) {
+        nodes_data = [...graph.nodes];
+        edges_data = Object.entries(relsMap).reduce(function (edges, [k, v]) {
             const [startNode, endNode] = k.split(',');
             if (nodesMap[startNode] && nodesMap[endNode]) {
 
@@ -651,59 +660,61 @@ function initCanvas(companyId) {
      * @param {Object} graph 
      */
     function renderBar(graph) {
-        // --> 1. 绘制时间轴工具条
         var barMap = {};
         if (graph.relations) {
             graph.relations.forEach(function (d) {
                 barMap[d.starDate] = barMap[d.starDate] ? barMap[d.starDate] + 1 : 1;
             });
         }
-
-        var barData = [];
+        var barArr = [];
         for (var k in barMap) {
-            barData.push({
+            barArr.push({
                 at: new Date(k),
                 value: barMap[k],
                 type: 'bar'
             });
-        }
+        };
+        var barData = [{
+            label: 'bar',
+            data: barArr
+        }];
+
+        // 拖动笔刷，更新关系图
+        var onBrushBar = function (startTime, endTime) {
+            if (startTime === endTime) {
+                edges_data.forEach(function (link) {
+                    link.lines.forEach(function (ln) {
+                        ln.disuse = false;
+                    });
+                    link.source.disuse = false;
+                });
+            } else {
+                edges_data.forEach(function (link) {
+                    link.lines.forEach(function (ln) {
+                        var time = new Date(ln.starDate).getTime();
+                        ln.disuse = !(time > startTime && time < endTime);
+                    });
+                    link.source.disuse = !link.lines.filter(function (d) {
+                        return !d.disuse;
+                    }).length;
+                });
+            }
+            slideTimeline();  // 根据时间轴范围变化，筛选关系（修改样式）
+        };
 
         // 时间轴工具条配置
-        var barSetting = {
-            fn: {
-                // 拖动时间轴工具条笔刷，更新关系图数据
-                onBrush: function (startTime, endTime) {
-                    if (startTime === endTime) {
-                        edges_data.forEach(function (link) {
-                            link.lines.forEach(function (ln) { ln.disuse = false; });
-                            link.source.filter = false;
-                        });
-                    } else {
-                        edges_data.forEach(function (link) {
-                            link.lines.forEach(function (ln) {
-                                var time = new Date(ln.starDate).getTime();
-                                ln.disuse = !(time > startTime && time < endTime);
-                            });
-                            link.source.filter = !link.lines.filter(function (d) {
-                                return !d.disuse
-                            }).length;
-                        });
-                    }
-                    // 根据时间轴范围变化，筛选关系（修改样式）
-                    slideTimeline();
-                }
-            },
+        var barSettings = {
+            fn: { onBrush: onBrushBar },
             height: 80,
             zoom: [0.5, 0.5],
             startZoom: 0.5
             // ,enableLiveTimer: true
         };
 
-        tl.renderTimeBar([{
-            label: 'bar',
-            data: barData
-        }], barSetting);
+        // 渲染时间轴工具条
+        tl.renderTimeBar(barData, barSettings);
 
+        // 切换到范围选择
         switchScope(true);
         document.querySelector('#scope').querySelector('input').checked = true;
     }
@@ -1112,7 +1123,7 @@ function initCanvas(companyId) {
 
         links.each(function (d) {
             d3.select(this).selectAll('line').each(function (d) {
-                d3.select(this).classed('filter', d.disuse);
+                d3.select(this).classed('disuse', d.disuse);
                 d3.select(this).classed('selected', d.selected);
             });
         });

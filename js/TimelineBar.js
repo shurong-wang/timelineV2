@@ -286,6 +286,7 @@ TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
         .attr('transform', function (d, i) {
             return 'translate(0, ' + that.groupHeight * i + ')';
         });
+
     this.yScale = this.yScale || d3.scale.linear();
     this.yScale
         .domain([
@@ -299,15 +300,15 @@ TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
     this.yax = this.yax || this.svg.append("g");
     this.yax.attr("class", "axis").call(this.yAxis);
 
-
     this._groupDotItems = this.group.selectAll('.dot')
         .data(function (d) {
             return d.data.filter(function (_) {
                 return _.type === 'point';
             });
         });
+
     this.groupDotItems = this._groupDotItems.enter();
-    var dots = this.groupDotItems.append('circle')
+    this.groupDotItems.append('circle')
         .attr('class', this.withCustom('dot'))
         .attr('cx', function (d) {
             return that.x(d.at);
@@ -323,7 +324,9 @@ TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
         });
 
     this.groupDotItems = this._groupBarItems.enter();
-    var dots = this.groupDotItems.append('rect')
+
+    // --- todo 以下代码报错 --- //
+    this.groupDotItems.append('rect')
         .attr('class', this.withCustom('bar'))
         .attr('x', function (d) {
             return that.x(d.at) - 2.5;
@@ -335,8 +338,7 @@ TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
         .attr('height', function (d) {
             return that.groupHeight - that.yScale(d.value) - 1
         })
-        .style('fill', 'rgb(141, 149, 250)');
-
+        .style('fill', 'rgb(227, 166, 0)');
 
     this.zoomed();
 
@@ -468,20 +470,20 @@ TimelineBar.prototype.getTextPositionData = function (t, d) {
 
 TimelineBar.prototype.getPointMinDt = function (p) {
     if (p.type == 'point') {
-        return p.at
+        return p.at;
     } else if (p.type == 'bar') {
-        return p.at
+        return p.at;
     } else {
-        return p.form
+        return p.form;
     }
 }
 TimelineBar.prototype.getPointMaxDt = function (p) {
     if (p.type == 'point') {
-        return p.at
+        return p.at;
     } else if (p.type == 'bar') {
-        return p.at
+        return p.at;
     } else {
-        return p.to
+        return p.to;
     }
 }
 TimelineBar.prototype.onVizChange = function (fn) {

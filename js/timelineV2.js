@@ -999,16 +999,6 @@ function initCanvas(companyId) {
         console.log('收起子关系节点', ids);
         const [id] = ids;
 
-        // 全部收起
-        if (id === COMPANY_ID) {
-            graph.relations = [];
-            graph.nodes = graph.nodes.filter(({ id }) => id === COMPANY_ID);
-            toggleNR(id, graph, false);
-            // 更新画图数据
-            update(graph, ids);
-            return;
-        }
-
         // 直接关系
         const directRels = graph.relations.filter(({ startNode, endNode }) => startNode === id || endNode === id);
 

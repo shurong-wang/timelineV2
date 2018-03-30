@@ -21,7 +21,7 @@ var TimelineBar = function (element) {
     return this;
 };
 
-// 绘制时间轴工具条
+// 绘制时间轴
 TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
     this.setting = this.extendSetting(opts);
     if (!data) data = this.data;
@@ -108,7 +108,7 @@ TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
 
     var extent = this.brush && this.brush.extent && this.brush.extent();
 
-    // 拖动时间轴工具条-更新时间范围-更新关系图
+    // 拖动时间轴-更新时间范围-更新关系图
     this.brush = d3.svg.brush()
         .x(this.x)
         .on('brush', function () {

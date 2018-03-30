@@ -176,7 +176,7 @@ function initCanvas(companyId) {
     if (graph) {
         // --> 渲染力学图
         requestAnimationFrame(function () {
-            renderFroce(graph);
+            renderForce(graph);
         });
     } else {
         d3.json(url, function (error, graph) {
@@ -196,172 +196,30 @@ function initCanvas(companyId) {
             timeLineCache.set(url, graph);
 
             // --> 1. 绘制关系图 
-            renderFroce(graph);
+            renderForce(graph);
 
-            // --> 2. 刷选选画布元素
-            brushHandle(graph);
+            // --> 2. 生成笔刷菜单
+            renderBrushMenu(graph);
 
-            // --> 2. 绘制时间轴工具条
-            renderBar(graph);
+            // --> 3. 绘制时间轴
+            renderTimeline(graph);
         });
     }
 
-
     /**
-     * 渲染图像：时间轴工具条 + 关系图
-     * @param {Object} graph 
-     */
-    function renderFroce(graph) {
-        // 生成力学图数据
-        var { nodes_data, edges_data } = genForeData(graph);
-        
-        // console.log('更新前_nodes：', nodes_data);
-        // console.log('更新前_edges：', edges_data);
-
-        // 绑定力导向图数据，开启力学计算
-        force
-            .nodes(nodes_data)
-            .links(edges_data)
-            .start();
-
-        // 强制停止力学布局
-        setTimeout(function () {
-            force.stop();
-        }, 3000);
-
-        // 关系分组
-        links = links
-            .data(edges_data, d => d.source.id + '-' + d.target.id)
-            .enter().append('g')
-            .attr('class', 'link')
-            .each(function (link) {
-                var lineG = d3.select(this);
-                var lineEnter = lineG.selectAll('line')
-                    .data(link.lines, d => d.id)
-                    .enter();
-
-                // 关系连线
-                rLine = lineEnter.append('line')
-                    .attr('class', 'r-line')
-                    .attr('stroke', d => RELATION_COLOURS[d.type])
-                    .attr('marker-end', d => 'url(#' + d.type + ')');
-
-                // 关系文字
-                rText = lineEnter.append('text')
-                    .attr('class', 'r-text')
-                    .text(function (d) {
-                        return d.label;
-                    });
-            });
-
-        links
-            .on('mouseenter', function () {
-                isHoverLine = true;
-            })
-            .on('mouseleave', function () {
-                isHoverLine = false;
-            });
-
-        // 节点分组
-        nodes = nodes
-            .data(nodes_data, d => d.id)
-            .enter().append('g')
-            .attr('class', 'node')
-            // .style('fill-opacity', .2)
-            .each(function (d) {
-                var nodesG = d3.select(this);
-                nodesG.classed(d.ntype, true);
-                d.selected = false;
-                d.previouslySelected = false;
-                d.r = NODE_STYLE[d.ntype].r;
-
-                // 节点圆形
-                nCircle = nodesG.append('circle')
-                    .attr('class', 'n-circle')
-                    .attr(NODE_STYLE[d.ntype])
-                    .classed('curr', d => d.id === COMPANY_ID);
-
-                // 节点文字
-                nText = nodesG.append('text')
-                    .attr('class', 'n-text')
-                    .attr('y', d => {
-                        const len = d.name.length;
-                        return len > 9 ? '-2.3em' : (len <= 4 ? '-1em' : '-1.6em');
-                    })
-                    .each(d => {
-                        const context = d3.select(this).select('text');
-                        const paragraphs = getParagraphs(d.name);
-                        context
-                            .selectAll('tspan')
-                            .data(paragraphs)
-                            .enter()
-                            .append('tspan')
-                            .attr({
-                                x: 0,
-                                dy: '1.4em'
-                            })
-                            .text(d => d);
-                    });
-
-             // 选中聚焦环
-            selectedHalo = nodesG.append('circle')
-                .attr('class', 'n-halo')
-                .attr('r', d => NODE_STYLE[d.ntype].r + 5)
-                .attr('id', d => 'halo-' + d.id)
-                .style('fill', 'rgba(0,0,0,.0)')
-                .style('stroke', 'rgb(0,209,218)')
-                .style('stroke-width', 4)
-                .classed('hidden', true);
-            });
-
-        nodes
-            .on('mouseenter', function (d) {
-                if (isDraging) {
-                    return;
-                }
-                isHoverNode = true;
-                if (!isBrushing) {
-                    d3.select(this).select('circle').transition().attr('r', 8 + NODE_STYLE[d.ntype].r);
-                }
-            })
-            .on('mouseleave', function (d) {
-                if (isDraging) {
-                    return;
-                }
-                isHoverNode = false;
-                d3.select(this).select('circle').transition().attr('r', NODE_STYLE[d.ntype].r);
-            })
-            .on('dblclick', function (d) {
-                d3.select(this).classed('fixed', d.fixed = false);
-                d.open ? closeNR([d.id], graph) : openNR([d.id], graph);
-            })
-            .call(drag);
-
-        // 数据流小球比例尺
-        flowScale = setFlowScale(graph);
-
-        // 关闭 loading 动画
-        requestAnimationFrame(function () {
-            toggleMask(false);
-        });
-
-    } // renderFroce end 
-
-    /**
-     * 更新关系图
+     * 渲染/更新关系图
      * @param {Object} graph   
      */
-    function update(graph, ids) {
+    function renderForce(graph) {
 
-        if (!graph || !ids) {
+        if (!graph) {
+            toggleMask(false);
+            console.error('画图数据格式错误！');
             return;
         }
 
-        // --> 1. 更新时间关系图
-        // 更新力学图数据
+        // 力学图数据
         var { nodes_data, edges_data } = genForeData(graph);
-        // console.log('更新后_nodes：', nodes_data);
-        // console.log('更新后_edges：', edges_data);
 
         // 更新关系（连线）
         links = links.data(edges_data, d => d.source.id + '-' + d.target.id);
@@ -495,8 +353,6 @@ function initCanvas(companyId) {
             toggleMask(false);
         });
 
-        // --> 2. 更新时间轴工具条
-        renderBar(graph);
     }
 
     /**
@@ -681,10 +537,10 @@ function initCanvas(companyId) {
     }
 
     /**
-     * 绘制时间轴工具条
+     * 绘制时间轴
      * @param {Object} graph 
      */
-    function renderBar(graph) {
+    function renderTimeline(graph) {
         var barMap = {};
         if (graph.relations) {
             graph.relations.forEach(function (d) {
@@ -727,7 +583,7 @@ function initCanvas(companyId) {
             slideTimeline();  // 根据时间轴范围变化，筛选关系（修改样式）
         };
 
-        // 时间轴工具条配置
+        // 时间轴配置
         var barSettings = {
             fn: { onBrush: onBrushBar },
             height: 80,
@@ -736,12 +592,21 @@ function initCanvas(companyId) {
             // ,enableLiveTimer: true
         };
 
-        // 渲染时间轴工具条
+        // 渲染时间轴
         tl.renderTimeBar(barData, barSettings);
 
         // 切换到范围选择
         switchScope(true);
         document.querySelector('#scope').querySelector('input').checked = true;
+    }
+
+    /**
+     * 更新画布
+     * @param {Object} graph 
+     */
+    function update(graph) {
+        renderForce(graph);
+        renderTimeline(graph);
     }
 
     /**
@@ -758,9 +623,9 @@ function initCanvas(companyId) {
         return flowScale.domain(d3.extent(amoutList));
     }
     /**
-     * 选中画布范围
+     * 笔刷菜单
      */
-    function brushHandle(graph) {
+    function renderBrushMenu(graph) {
         d3brush
             .on('brushstart', brushstartFn)
             .on('brush', brushFn)
@@ -958,8 +823,7 @@ function initCanvas(companyId) {
             return !(ids.includes(startNode) || ids.includes(endNode));
         });
 
-        // 更新画图数据
-        update(graph, ids);
+        update(graph);
     }
 
     // 刷新节点间关系
@@ -991,9 +855,8 @@ function initCanvas(companyId) {
 
         var _graph = updateCache.get(url);
         if (_graph) {
-            // --> 渲染力学图
             requestAnimationFrame(function () {
-                update(addNR(_graph), ids);
+                update(addNR(_graph));
             });
             return;
         }
@@ -1013,7 +876,7 @@ function initCanvas(companyId) {
                 }
             }
             updateCache.set(url, _graph);
-            update(addNR(_graph), ids);
+            update(addNR(_graph));
         });
 
     }
@@ -1064,8 +927,7 @@ function initCanvas(companyId) {
 
         toggleNR(id, graph, false);
 
-        // 更新画图数据
-        update(graph, ids);
+        update(graph);
     }
 
     // 打开/收起节点关系
@@ -1093,9 +955,8 @@ function initCanvas(companyId) {
 
         var _graph = updateCache.get(url);
         if (_graph) {
-            // --> 渲染力学图
             requestAnimationFrame(function () {
-                update(addNR(_graph), ids);
+                update(addNR(_graph));
             });
             return;
         }
@@ -1115,7 +976,7 @@ function initCanvas(companyId) {
                 }
             }
             updateCache.set(url, _graph);
-            update(addNR(_graph), ids);
+            update(addNR(_graph));
         });
 
     }

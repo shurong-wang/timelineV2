@@ -61,8 +61,8 @@ function initCanvas(companyId) {
     //     companyId: COMPANY_ID
     // });
 
-    var url = './data/relations.final.json';
-    // var url = './data/relations.init.json';
+    // var url = './data/relations.final.json';
+    var url = './data/relations.init.json';
 
     // var url = './data/sub/relations.busine.json';
     // var url = './data/sub/relations.bank.json';
@@ -198,6 +198,9 @@ function initCanvas(companyId) {
             // --> 1. 绘制关系图 
             renderFroce(graph);
 
+            // --> 2. 刷选选画布元素
+            brushHandle(graph);
+
             // --> 2. 绘制时间轴工具条
             renderBar(graph);
         });
@@ -299,6 +302,16 @@ function initCanvas(companyId) {
                             })
                             .text(d => d);
                     });
+
+             // 选中聚焦环
+            selectedHalo = nodesG.append('circle')
+                .attr('class', 'n-halo')
+                .attr('r', d => NODE_STYLE[d.ntype].r + 5)
+                .attr('id', d => 'halo-' + d.id)
+                .style('fill', 'rgba(0,0,0,.0)')
+                .style('stroke', 'rgb(0,209,218)')
+                .style('stroke-width', 4)
+                .classed('hidden', true);
             });
 
         nodes
@@ -326,9 +339,6 @@ function initCanvas(companyId) {
 
         // 数据流小球比例尺
         flowScale = setFlowScale(graph);
-
-        // 选中画布范围
-        brushHandle(graph);
 
         // 关闭 loading 动画
         requestAnimationFrame(function () {
@@ -366,6 +376,11 @@ function initCanvas(companyId) {
             .nodes(nodes_data)
             .links(edges_data)
             .start();
+
+        // 强制停止力学布局
+        setTimeout(function () {
+            force.stop();
+        }, 3000);
 
         // 关系分组
         links.enter().append('g')
@@ -437,7 +452,17 @@ function initCanvas(companyId) {
                             })
                             .text(d => d);
                     });
-            });
+
+                // 选中聚焦环
+                selectedHalo = nodesG.append('circle')
+                    .attr('class', 'n-halo')
+                    .attr('r', d => NODE_STYLE[d.ntype].r + 5)
+                    .attr('id', d => 'halo-' + d.id)
+                    .style('fill', 'rgba(0,0,0,.0)')
+                    .style('stroke', 'rgb(0,209,218)')
+                    .style('stroke-width', 4)
+                    .classed('hidden', true);
+                });
 
         nodes
             .on('mouseenter', function (d) {
@@ -745,16 +770,6 @@ function initCanvas(companyId) {
             .selectAll('rect')
             .style('fill-opacity', 0.3);
 
-        // 选中聚焦环
-        selectedHalo = nodes.append('circle')
-            .attr('r', function (d) { return NODE_STYLE[d.ntype].r + 5; })
-            .attr('class', 'n-halo')
-            .attr('id', function (d) { return 'halo-' + d.id; })
-            .style('fill', 'rgba(0,0,0,.0)')
-            .style('stroke', 'rgb(0,209,218)')
-            .style('stroke-width', 4)
-            .classed('hidden', true);
-
         // 隐藏选中聚焦环
         var hideSelectedHalo = function () {
             selectedHalo.classed('hidden', true);
@@ -928,9 +943,7 @@ function initCanvas(companyId) {
 
             }
         }
-
-        // 时间轴筛选关系
-        slideTimeline();
+        
     }
 
 

@@ -61,30 +61,40 @@ function initCanvas(companyId) {
     //     companyId: COMPANY_ID
     // });
 
-    // var url = './data/relations.final.json';
-    var url = './data/relations.init.json';
+    var url = './data/relations.final.json';
+    // var url = './data/relations.init.json';
 
     // var url = './data/sub/relations.busine.json';
     // var url = './data/sub/relations.bank.json';
     // var url = './data/sub/relations.contact.json';
     // var url = './data/sub/relations.household.json';
 
-    var ticking = false;
-    var isDraging = false;
-    var isHoverNode = false;
-    var isHoverLine = false;
-    var isBrushing = false;
-    var flowAnim = new FlowAnim();
+    var ticking = false,
+        isDraging = false,
+        isHoverNode = false,
+        isHoverLine = false,
+        isBrushing = false,
+        flowAnim = new FlowAnim();
 
-    var graph;
-    var nodes_data;
-    var edges_data;
-    var nodesMap;
-    var linesMap;
-    var relsMap;
+    var graph,  // API 原始数据格式
+        nodesMap = {}, // 节点映射
+        relsMap = {}, // 关系映射
+        linesMap = {}, // 连线映射（多条连线、互相连线）
+        flowMap = {}, // 数据流映射（关联时间轴）
+        typeMap = {}, // 关系类型映射
+        rTypeMap = {}, // 关系类型映射
+        nTypeSet = new Set(), // 节点类型集合
+        rTypeSet = new Set(), // 关系类型集合
+        dateSet = new Set(), // 日期集合
+        amoutSet = new Set(), // 数量集合
+        nodes_data = [], // 力学图节点绑定数据
+        edges_data = []; // 力学图连线绑定数据
 
     var width = d3.select('#graph-main').node().clientWidth;
     var height = d3.select('#graph-main').node().clientHeight;
+
+    // 数据流比例尺
+    var flowScale;
 
     // 节点笔刷比例尺 - 设置大于可见宽高，避免全屏后右边及下边选取不到
     var xScale = d3.scale.linear()
@@ -108,10 +118,10 @@ function initCanvas(companyId) {
         .size([width, height])
         .linkDistance(180)
         .charge([-1800])
-        .on('start', () => ticking = true)
-        .on('tick', tick)
-        .on('end', () => ticking = false);
-
+        .on('start', () => ticking = true) 
+        .on('tick', tick) 
+        .on('end', () => ticking = false); 
+    
 
     var drag = force.drag()
         .on('dragstart', dragstart)
@@ -142,6 +152,7 @@ function initCanvas(companyId) {
     var links = container.append('g').attr('class', 'links-group').selectAll('.link');
     var rLine = links.selectAll('.r-line');
     var rText = links.selectAll('.r-text');
+    var rFlow = links.selectAll('.r-flow');
 
     var nodes = container.append('g').attr('class', 'nodes-group').selectAll('.node');
     var nCircle = nodes.selectAll('.n-circle');
@@ -165,9 +176,6 @@ function initCanvas(companyId) {
         .style('fill', d => RELATION_COLOURS[d])
         .append('path')
         .attr('d', 'M2,2 L8,4 L2,6 L3,4 L2,2');
-
-    // 数据流小球比例尺
-    var flowScale = d3.scale.linear().range([4, 8]);
 
     /** 
      * 获取画图数据 && 绘图
@@ -195,14 +203,17 @@ function initCanvas(companyId) {
             }
             timeLineCache.set(url, graph);
 
-            // --> 1. 绘制关系图 
+            // -->  绘制关系图 
             renderForce(graph);
 
-            // --> 2. 生成笔刷菜单
+            // --> 生成笔刷菜单
             renderBrushMenu(graph);
 
-            // --> 3. 绘制时间轴
+            // --> 绘制时间轴
             renderTimeline(graph);
+
+            // -->  绘制数据流
+            renderFlowBall();
         });
     }
 
@@ -218,8 +229,8 @@ function initCanvas(companyId) {
             return;
         }
 
-        // 力学图数据
-        var { nodes_data, edges_data } = genForeData(graph);
+        // 数据构建
+        genForeData(graph);
 
         // 更新关系（连线）
         links = links.data(edges_data, d => d.source.id + '-' + d.target.id);
@@ -244,8 +255,8 @@ function initCanvas(companyId) {
         links.enter().append('g')
             .attr('class', 'link')
             .each(function (link) {
-                var lineG = d3.select(this);
-                var lineEnter = lineG.selectAll('line')
+                var linkG = d3.select(this);
+                var lineEnter = linkG.selectAll('line')
                     .data(link.lines, d => d.id)
                     .enter();
 
@@ -258,9 +269,7 @@ function initCanvas(companyId) {
                 // 关系文字
                 rText = lineEnter.append('text')
                     .attr('class', 'r-text')
-                    .text(function (d) {
-                        return d.label;
-                    });
+                    .text(d => d.label);
             });
 
         links
@@ -345,9 +354,6 @@ function initCanvas(companyId) {
             })
             .call(drag);
 
-        // 数据流小球比例尺
-        flowScale = setFlowScale(graph);
-
         // 关闭 loading 动画
         requestAnimationFrame(function () {
             toggleMask(false);
@@ -361,21 +367,31 @@ function initCanvas(companyId) {
      */
     function genForeData(graph) {
         if (!graph) {
-            return { nodes_data: [], edges_data: [] };
+            return;
         }
 
+        nodesMap = {}; // 节点映射
+        relsMap = {}; // 关系映射
+        linesMap = {}; // 连线映射（多条连线、互相连线）
+        flowMap = {}; // 数据流映射（关联时间轴）
+        typeMap = {}; // 关系类型映射
+        rTypeMap = {}; // 关系类型映射
+        nTypeSet = new Set(); // 节点类型集合
+        rTypeSet = new Set(); // 关系类型集合
+        dateSet = new Set(); // 日期集合
+        amoutSet = new Set(); // 数量集合
+
         nodesMap = graph.nodes.reduce(function (map, curr) {
-            if (!map[curr.id]) {
-                map[curr.id] = curr;
+            const { id, ntype } = curr;
+            if (!map[id]) { // 去重
+                map[id] = curr;
+                nTypeSet.add(ntype);
             }
             return map;
         }, {});
 
-        linesMap = {}; // 关系连线 -- 两个节点间可以有多条连线
-
         relsMap = graph.relations.reduce(function (map, curr) {
-            const { startNode, endNode, id } = curr;
-
+            const { id, startNode, endNode, starDate, type, amout } = curr;
             const k = [startNode, endNode];
             if (nodesMap[startNode] && nodesMap[endNode]) {
                 if (!map[k]) {
@@ -383,21 +399,29 @@ function initCanvas(companyId) {
                         lines: []
                     };
                 };
-                if (!linesMap[id]) { // 连线去重
+                if (!linesMap[id]) { // 去重
                     linesMap[id] = curr;
                     map[k].lines.push(curr);
+                    rTypeMap[type] = (typeMap[type] || []).concat(curr);
+                    flowMap[starDate] = (flowMap[starDate] || []).concat(curr);
+                    rTypeSet.add(type);
+                    dateSet.add(starDate);
+                    amoutSet.add(amout);
                 }
             }
             return map;
         }, {});
 
+        // 数据流比例尺
+        flowScale = d3.scale.linear()
+            .range([4, 8])
+            .domain(d3.extent(Array.from(amoutSet)));
+
         // 节点去重
         graph.nodes = [...Object.values(nodesMap)];
 
         // 关系去重
-        graph.relations = Object.values(relsMap).reduce(function (rels, { lines }) {
-            return [...rels, ...lines];
-        }, []);
+        graph.relations = Object.values(relsMap).reduce((relations, { lines }) => relations.concat(lines), []);
 
         // console.log('graph', graph);
 
@@ -424,12 +448,6 @@ function initCanvas(companyId) {
                         lines: relsMap[k].lines
                     });
                 }
-
-                // edges.push({
-                //     source: nodesMap[startNode],
-                //     target: nodesMap[endNode],
-                //     lines: relsMap[k].lines
-                // });
             }
             return edges;
         }, []);
@@ -439,8 +457,6 @@ function initCanvas(companyId) {
         // getDirectRelsById(0, graph.relations, nodesMap);
         // getRelsByType([], graph.relations, nodesMap);
         // getRelsBetweenIds([], graph.relations, nodesMap);
-
-        return { nodes_data, edges_data };
     }
 
     // 获取直接关系
@@ -584,7 +600,7 @@ function initCanvas(companyId) {
         };
 
         // 时间轴配置
-        var barSettings = {
+        var barOpts = {
             fn: { onBrush: onBrushBar },
             height: 80,
             zoom: [0.5, 0.5],
@@ -593,7 +609,7 @@ function initCanvas(companyId) {
         };
 
         // 渲染时间轴
-        tl.renderTimeBar(barData, barSettings);
+        tl.renderTimeBar(barData, barOpts);
 
         // 切换到范围选择
         switchScope(true);
@@ -607,21 +623,9 @@ function initCanvas(companyId) {
     function update(graph) {
         renderForce(graph);
         renderTimeline(graph);
+        renderFlowBall();
     }
 
-    /**
-     * 设置数据流小球比例尺
-     * @param {Object} graph 
-     */
-    function setFlowScale(graph) {
-        var amoutList = [];
-        graph.relations.forEach(function (d) {
-            if (d.amout) {
-                amoutList.push(d.amout);
-            }
-        });
-        return flowScale.domain(d3.extent(amoutList));
-    }
     /**
      * 笔刷菜单
      */
@@ -1003,7 +1007,7 @@ function initCanvas(companyId) {
         });
 
         if (oldRFlag != newRFlag) {
-            renderFlowBall(links);
+            renderFlowBall();
         }
 
         oldRFlag = newRFlag;
@@ -1012,7 +1016,7 @@ function initCanvas(companyId) {
     function tick() {
         ticking = true;
         links.each(function (link) {
-            var lineG = d3.select(this);
+            var linkG = d3.select(this);
 
             var {
                 source: {
@@ -1033,7 +1037,7 @@ function initCanvas(companyId) {
             var count = lines.length; // 连线条数
 
             //关系连线
-            lineG.selectAll('line').each(function (d, i) {
+            linkG.selectAll('line').each(function (d, i) {
                 const { startNode, endNode, type } = d;
                 const isReverse = (+startNode === +tid && +endNode === +sid);
                 if (isReverse) {
@@ -1050,7 +1054,7 @@ function initCanvas(companyId) {
             });
 
             // 关系文字
-            lineG.selectAll('text').attr('transform', function (d) {
+            linkG.selectAll('text').attr('transform', function (d) {
                 var { x1, y1, x2, y2 } = d;
                 var textX = x1 + (x2 - x1) / 2;
                 var textY = y1 + (y2 - y1) / 2;
@@ -1200,7 +1204,7 @@ function initCanvas(companyId) {
     // 清除数据流动画
     function clearFlowAnim() {
         flowAnim.stopAll();
-        d3.selectAll('.flow').remove();
+        d3.selectAll('.r-flow').remove();
         links.each(function (d) {
             d.lines.forEach(function (d) {
                 delete d.flow;
@@ -1209,40 +1213,40 @@ function initCanvas(companyId) {
     }
 
     // 渲染数据流动画
-    function renderFlowBall(links) {
+    function renderFlowBall() {
+        // 清除数据流
         clearFlowAnim();
+        // 添加数据流节点
         var activeLinks = links.filter(d => !d.disuse);
-
         activeLinks.each(function () {
             var m = 0;
-            var activeLink = d3.select(this);
-            var activeLines = activeLink.selectAll('line');
-            var flowLines = activeLines.filter(d => ['TELPHONE', 'BANK'].includes(d.type));
-
-            activeLines.each(function (d, k) {
+            var linkG = d3.select(this);
+            var flowLines = linkG.selectAll('line').filter(d => ['TELPHONE', 'BANK'].includes(d.type));
+            flowLines.each(function (d, k) {
                 if (['TELPHONE', 'BANK'].includes(d.type)) {
-                    d.flow = activeLink.append('circle')
-                        .attr('class', 'flow')
+                    d.flow = linkG.append('circle')
+                        .attr('class', 'r-flow')
+                        .style('display', 'none')
+                        .style('fill', RELATION_COLOURS[d.type])
                         .attr('r', flowScale(d.amout || 1))
-                        .style('fill', RELATION_COLOURS[d.type]);
                 }
             });
-
-            flowAnim.start(function () {
+            var anim = function () {
                 flowLines.each(function (d) {
-                    var flowLine = d3.select(this);
-                    var x1 = parseInt(flowLine.attr('x1'));
-                    var y1 = parseInt(flowLine.attr('y1'));
-                    var x2 = parseInt(flowLine.attr('x2'));
-                    var y2 = parseInt(flowLine.attr('y2'));
+                    const { x1, y1, x2, y2 } = d;
                     var x = x1 + ((m % 200) / 199) * (x2 - x1);
                     var y = y1 + ((m % 200) / 199) * (y2 - y1);
                     if (x && y) {
-                        d.flow.attr('cx', x).attr('cy', y);
+                        d.flow
+                            .attr('cx', x)
+                            .attr('cy', y)
+                            .style('display', 'block');
                     }
                 });
                 m++;
-            }, 90);
+            };
+            // 开启动画
+            flowAnim.start(anim, 90);
         });
 
     }

@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta http-equiv='X-UA-Compatible' content='ie=edge'>
+    <title>timeline-map</title>
+    <style>
+    </style>
+</head>
+
+<body>
+    <!DOCTYPE html>
+    <meta charset='utf-8'>
+    <script src='//d3js.org/d3.v3.min.js'></script>
+    <style>
+        .axis {
+            user-select: none;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .brush .extent {
+            fill-opacity: .125;
+            shape-rendering: crispEdges;
+        }
+    </style>
+
+    <body>
+        <div id="map">
+            <span id="start-date"></span>
+            TO
+            <span id="end-date"></span>
+        </div>
+        <div id="canvas"></div>
+    </body>
+
+    <script>
+
+        var margin = { top: 400, right: 40, bottom: 40, left: 40 };
+        var width = 1000 - margin.left - margin.right,
+            height = 50;
+
+        // 画布
+        var svg = d3.select('#canvas').append('svg')
+            .attr('width', width + margin.left + margin.right)
+            .attr('height', height + margin.top)
+            .append('g')
+            .attr('class', 'container')
+            .attr('transform', 'translate(' + margin.left + ',' + margin.top + ')');
+
+        // 时间比例尺
+        var xTimeScale = d3.time.scale()
+            .domain([new Date(2012, 0, 1), new Date(2017, 11, 30)])
+            .range([0, width - 40])
+            .nice(d3.time.month, 12)
+
+        // 坐标轴刻度标注格式化
+        var zhTimeFormat = d3.time.format.multi([
+            ['.%L毫秒', d => d.getMilliseconds()],
+            [':%S秒', d => d.getSeconds()],
+            ['%H点:%M分', d => d.getMinutes()],
+            ['%H点', d => d.getHours()],
+            ['%m月%d日', d => d.getDay() && d.getDate() != 1],
+            ['%m月%d日', d => d.getDate() != 1],
+            ['%Y-%m', d => d.getMonth()],
+            ['%Y-%m', () => true]
+        ]);
+
+        // x 坐标轴
+        var xAxis = d3.svg.axis()
+            .scale(xTimeScale)
+            .orient('bottom')
+            .tickSize(-this.height) // 刻度线长度（负数表示 orient 反方向）
+            .tickPadding(5) // 刻度与标签之间的间距
+            .ticks(d3.time.month, 12)
+            .tickFormat(zhTimeFormat);
+
+        // 在 SVG 元素上绘制 x 坐标轴
+        var gSlider = svg.append('g')
+            .attr('class', 'slider x axis')
+            .call(xAxis);
+
+        // 范围选择器
+        var brush = d3.svg.brush()
+            .x(xTimeScale)
+            .extent([Time2stamp('2014-01-01'), Time2stamp('2014-12-31')])
+            .clamp([true]) // 闭合夹选范围
+            .on('brush', brushed);
+
+        // 在 SVG 元素上绘制范围选择器
+        var gBrush = svg.append('g')
+            .attr('class', 'brush')
+            .attr('transform', 'translate(0, ' + -height + ')')
+            .call(brush);
+
+        // 设置拖选范围的高度（否则不会显示）
+        gBrush.selectAll('rect')
+            .attr('height', height);
+
+
+        brushed();
+
+        // 监听拖选范围终点值
+        function brushed() {
+            d3.select('#start-date')
+                .text(stamp2Time(brush.extent()[0]));
+            d3.select('#end-date')
+                .text(stamp2Time(brush.extent()[1]));
+        }
+
+        // 清空拖选范围
+        function clearBrush() {
+            brush.clear().event(svg);
+            if (brush.empty()) {
+                brush.extent([0, 0]);
+                brush(svg);
+            }
+        }
+
+        function stamp2Time(timestamp) {
+            var zeroize = s => s < 10 ? '0' + s : s;
+            var date = new Date(timestamp);
+            Y = date.getFullYear();
+            M = zeroize(date.getMonth() + 1);
+            D = zeroize(date.getDate());
+            h = zeroize(date.getHours());
+            m = zeroize(date.getMinutes());
+            s = zeroize(date.getSeconds());
+            // return `${Y}-${M}-${D} ${h}:${m}:${s}`;
+            return `${Y}-${M}-${D}`;
+        }
+
+        function Time2stamp(datestring) {
+            return new Date(datestring).getTime();
+        }
+    </script>
+</body>
+
+</html>

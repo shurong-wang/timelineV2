@@ -5,15 +5,7 @@
     <meta charset='UTF-8'>
     <meta name='viewport' content='width=device-width, initial-scale=1.0'>
     <meta http-equiv='X-UA-Compatible' content='ie=edge'>
-    <title>timeline-map</title>
-    <style>
-    </style>
-</head>
-
-<body>
-    <!DOCTYPE html>
-    <meta charset='utf-8'>
-    <script src='//d3js.org/d3.v3.min.js'></script>
+    <title>v3-timeline-handle</title>
     <style>
         .axis {
             user-select: none;
@@ -38,15 +30,17 @@
             shape-rendering: crispEdges;
         }
     </style>
+    <script src='//d3js.org/d3.v3.min.js'></script>
+</head>
 
-    <body>
-        <div id="map">
-            <span id="start-date"></span>
-            TO
-            <span id="end-date"></span>
-        </div>
-        <div id="canvas"></div>
-    </body>
+<body>
+    <div id="map">
+        <span id="start-date"></span>
+        TO
+        <span id="end-date"></span>
+    </div>
+    
+    <div id="canvas"></div>
 
     <script>
         var margin = {
@@ -87,7 +81,7 @@
         // x 坐标轴
         var xAxis = d3.svg.axis()
             .scale(xTimeScale)
-            // .orient('bottom')
+            .orient('bottom')
             .tickSize(5) // 刻度线长度（负数表示 orient 反方向）
             .tickPadding(5) // 刻度与标签之间的间距
             .ticks(d3.time.month, 12)
@@ -108,7 +102,7 @@
         var start = Time2stamp('2014-01-01');
         var end = Time2stamp('2014-12-31');
         brush.extent([start, end]);
-        
+
         // 在 SVG 元素上绘制范围选择器
         var gBrush = svg.append('g')
             .attr('class', 'brush')
@@ -133,7 +127,7 @@
                 .endAngle(function (d, i) {
                     return i ? -Math.PI : Math.PI;
                 }))
-            .attr('transform', 'translate(' + [0,height / 2] + ')');
+            .attr('transform', 'translate(' + [0, height / 2] + ')');
 
         // 执行
         brushed();

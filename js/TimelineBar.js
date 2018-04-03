@@ -7,12 +7,12 @@ var TimelineBar = function (element) {
         left: 30
     };
     this.setting = {
-        intervalMinWidth: 8, // px
+        intervalMinWidth: 0, // px
         tip: undefined,
         textTruncateThreshold: 30,
         enableLiveTimer: false,
         timerTickInterval: 1000,
-        fn: function () {}
+        fn: function () { }
     };
     this.element = element;
 
@@ -28,6 +28,10 @@ TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
     if (!data) return;
     this.data = data;
     var that = this;
+
+    //解析时间字符串，返回日期对象
+    var dateObj =  d3.time.format('%Y-%m-%d').parse('2011-01-01');
+    
 
     this.allElements = data.reduce(function (agg, e) {
         return agg.concat(e.data);
@@ -50,61 +54,32 @@ TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
         return;
     }
 
-    var startDate = new Date(this.minDt.getTime() - 30 * 24 * 60 * 60);
-    var endDate = new Date(this.maxDt.getTime() + 30 * 24 * 60 * 60);
+    var startDate = new Date(this.minDt.getTime());
+    var endDate = new Date(this.maxDt.getTime());
     var xDomain = this.x && !callback ? this.x.domain() : [startDate, endDate];
     var xRange = [this.groupWidth, this.width];
 
     // 创建一个时间比例尺
     this.x = d3.time.scale()
         .domain(xDomain)
-        .range(xRange);
-
-    // 时间解析器
-    var f = d3.time.format.multi([
-        [".%L毫秒", function (d) {
-            return d.getMilliseconds();
-        }],
-        [":%S秒", function (d) {
-            return d.getSeconds();
-        }],
-        ["%H点:%M分", function (d) {
-            return d.getMinutes();
-        }],
-        ["%H点", function (d) {
-            return d.getHours();
-        }],
-        ["%m月%d日", function (d) {
-            return d.getDay() && d.getDate() != 1;
-        }],
-        ["%m月%d日", function (d) {
-            return d.getDate() != 1;
-        }],
-        ["%Y-%m", function (d) {
-            return d.getMonth();
-        }],
-        ["%Y-%m", function () {
-            return true;
-        }]
-    ]);
+        .range(xRange)
+        .nice(d3.time.month, 6);
 
     // 新建坐标轴
     this.xAxis = d3.svg.axis()
         .scale(this.x)
         .orient('bottom')
         .tickSize(-this.height)
-        .tickFormat(function (d) {
-            return f(d);
-        });
+        .tickFormat(d3.time.format("%Y-%m"));
 
     // 缩放/平移动作
     this.zoom = d3.behavior.zoom()
         .x(this.x)
-        .scaleExtent(this.setting.zoom || [1.5, 1.5])
+        .scaleExtent([1, 1])
+        .scale(1.5)
         .on('zoom', function () {
             that.zoomed()
-        })
-        .scale(this.setting.startZoom || 1.5);
+        });
 
     var extent = this.brush && this.brush.extent && this.brush.extent();
 
@@ -375,16 +350,22 @@ TimelineBar.prototype.zoomed = function () {
         this.updateNowMarker();
     }
 
-    // var max = new Date().getTime() + 1000*60*60*24*365;
-    // var start = this.x.domain()[0].getTime();
-    // var end = this.x.domain()[1].getTime();
-    // var qj = end - start;
-    // if(end > max) {
-    //     this.x.domain([new Date(max - qj), new Date(max)]);
-    //     this.zoom.x(this.x)
-    //     console.log(this.zoom.scaleExtent(), d3.event.scale)
-    //     this.chart_bounds.call(this.zoom)
-    // }
+    var offset = 365 * 24 * 60 * 60 * 1000;
+    var min = this.minDt.getTime() - offset;
+    var max = new Date().getTime() + offset;
+    var start = this.x.domain()[0].getTime();
+    var end = this.x.domain()[1].getTime();
+    var qj = end - start;
+
+    if(end > max) {
+        this.x.domain([new Date(max - qj), new Date(max)]);
+        this.zoom.x(this.x);
+        this.chart_bounds.call(this.zoom);
+    }
+
+    if(start < min) {
+        return;
+    }
 
     this.svg.select('.x.axis').call(this.xAxis);
 
@@ -446,7 +427,7 @@ TimelineBar.prototype.zoomed = function () {
 
 TimelineBar.prototype.extendSetting = function (ext) {
     var ol = [];
-    for (var i in ext) { 
+    for (var i in ext) {
         ol.push(i);
     }
     for (var i in ol) {

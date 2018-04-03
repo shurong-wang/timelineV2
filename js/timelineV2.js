@@ -118,10 +118,10 @@ function initCanvas(companyId) {
         .size([width, height])
         .linkDistance(180)
         .charge([-1800])
-        .on('start', () => ticking = true) 
-        .on('tick', tick) 
-        .on('end', () => ticking = false); 
-    
+        .on('start', () => ticking = true)
+        .on('tick', tick)
+        .on('end', () => ticking = false);
+
 
     var drag = force.drag()
         .on('dragstart', dragstart)
@@ -329,7 +329,7 @@ function initCanvas(companyId) {
                     .style('stroke', 'rgb(0,209,218)')
                     .style('stroke-width', 4)
                     .classed('hidden', true);
-                });
+            });
 
         nodes
             .on('mouseenter', function (d) {
@@ -602,10 +602,7 @@ function initCanvas(companyId) {
         // 时间轴配置
         var barOpts = {
             fn: { onBrush: onBrushBar },
-            height: 80,
-            zoom: [0.5, 0.5],
-            startZoom: 0.5
-            // ,enableLiveTimer: true
+            height: 80
         };
 
         // 渲染时间轴
@@ -812,7 +809,7 @@ function initCanvas(companyId) {
 
             }
         }
-        
+
     }
 
 
@@ -1107,15 +1104,10 @@ function initCanvas(companyId) {
     }
 
     function zoomFn() {
-        var off = d3.select('#offZoom').property('checked');
-        if (off) {
-            return;
+        if (!d3.select('#offZoom').property('checked')) {
+            var { translate, scale } = d3.event;
+            container.attr('transform', 'translate(' + translate + ')scale(' + scale + ')');
         }
-        var {
-            translate,
-            scale
-        } = d3.event;
-        container.attr('transform', 'translate(' + translate + ')scale(' + scale + ')');
     }
 
     /**

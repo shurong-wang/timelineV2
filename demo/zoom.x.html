@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta http-equiv='X-UA-Compatible' content='ie=edge'>
+    <title>zoom.x</title>
+    <script src='//d3js.org/d3.v3.min.js'></script>
+    <style>
+        body {
+            position: relative;
+            width: 960px;
+        }
+
+        svg {
+            font: 10px sans-serif;
+            shape-rendering: crispEdges;
+            cursor: pointer;
+        }
+
+        rect {
+            fill: #ddd;
+        }
+
+        .axis path,
+        .axis line {
+            fill: none;
+            stroke: #fff;
+        }
+
+        .axis text {
+            user-select: none;
+        }
+
+        button {
+            position: absolute;
+            right: 30px;
+            top: 30px;
+            cursor: pointer;
+        }
+    </style>
+</head>
+
+<body>
+    <button>Reset</button>
+
+    <script>
+
+        var margin = { top: 20, right: 20, bottom: 30, left: 40 },
+            width = 960 - margin.left - margin.right,
+            height = 100 - margin.top - margin.bottom;
+
+        var x = d3.scale.linear()
+            .domain([-width / 2, width / 2])
+            .range([0, width]);
+
+        var xAxis = d3.svg.axis()
+            .scale(x)
+            .orient("bottom")
+            .tickSize(-height);
+
+        var zoom = d3.behavior.zoom()
+            .x(x)
+            .scaleExtent([1, 5])
+            .on("zoom", zoomed);
+
+        var svg = d3.select("body").append("svg")
+            .attr("width", width + margin.left + margin.right)
+            .attr("height", height + margin.top + margin.bottom)
+            .append("g")
+            .attr("transform", "translate(" + margin.left + "," + margin.top + ")")
+            .call(zoom);
+
+        svg.append("rect")
+            .attr("width", width)
+            .attr("height", height);
+
+        svg.append("g")
+            .attr("class", "x axis")
+            .attr("transform", "translate(0," + height + ")")
+            .call(xAxis);
+
+        d3.select("button").on("click", reset);
+
+        function zoomed() {
+            var offset = 250;
+            var dx = Math.abs(d3.event.translate[0]);
+            console.log('translateX:', dx);
+            if (dx >= offset) {
+                // return;
+            }
+            svg.select(".x.axis").call(xAxis);
+        }
+
+        function reset() {
+            d3.transition().duration(750).tween("zoom", function () {
+                var ix = d3.interpolate(x.domain(), [-width / 2, width / 2]);
+                return function (t) {
+                    zoom.x(x.domain(ix(t)));
+                    svg.select(".x.axis").call(xAxis);
+                };
+            });
+        }
+
+    </script>
+</body>
+
+</html>

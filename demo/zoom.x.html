@@ -51,9 +51,12 @@
             width = 960 - margin.left - margin.right,
             height = 100 - margin.top - margin.bottom;
 
+        var xDomain = [-width / 2, width / 2];
+        var xRange = [0, width];
+
         var x = d3.scale.linear()
-            .domain([-width / 2, width / 2])
-            .range([0, width]);
+            .domain(xDomain)
+            .range(xRange);
 
         var xAxis = d3.svg.axis()
             .scale(x)
@@ -63,7 +66,7 @@
         var zoom = d3.behavior.zoom()
             .x(x)
             .scaleExtent([1, 5])
-            .on("zoom", zoomed);
+            .on('zoom', zoomed);
 
         var svg = d3.select("body").append("svg")
             .attr("width", width + margin.left + margin.right)
@@ -84,18 +87,30 @@
         d3.select("button").on("click", reset);
 
         function zoomed() {
-            var offset = 250;
+            var offset = 150;
             var dx = Math.abs(d3.event.translate[0]);
-            console.log('translateX:', dx);
-            if (dx >= offset) {
-                // return;
+
+            var min = xDomain[0] - offset;
+            var max = xDomain[1] + offset;
+
+            var start = x.domain()[0];
+            var end = x.domain()[1];
+            var distance = end - start;
+
+            if (start > min && end < max) {
+                svg.select(".x.axis").call(xAxis);
+            } else {
+                if (end >= max) {
+                    x.domain([max - distance, max]);
+                    zoom.x(x);
+                    svg.call(zoom);
+                }
             }
-            svg.select(".x.axis").call(xAxis);
         }
 
         function reset() {
             d3.transition().duration(750).tween("zoom", function () {
-                var ix = d3.interpolate(x.domain(), [-width / 2, width / 2]);
+                var ix = d3.interpolate(x.domain(), xDomain);
                 return function (t) {
                     zoom.x(x.domain(ix(t)));
                     svg.select(".x.axis").call(xAxis);

@@ -1,0 +1,289 @@
+<!DOCTYPE html>
+<html lang='zh-CN'>
+
+<head>
+    <meta charset='UTF-8'>
+    <meta name='viewport' content='width=device-width, initial-scale=1.0'>
+    <meta http-equiv='X-UA-Compatible' content='ie=edge'>
+    <title>bar.dynamic</title>
+    <style>
+        *,
+        *:before,
+        *:after {
+            box-sizing: border-box;
+        }
+
+        .fix {
+            *zoom: 1;
+        }
+
+        .fix:after {
+            display: block;
+            content: "clear";
+            height: 0;
+            clear: both;
+            overflow: hidden;
+            visibility: hidden;
+        }
+
+        body,
+        ul {
+            margin: 0;
+            padding: 0;
+        }
+
+        li {
+            list-style: none;
+        }
+
+        .material-box {
+            background: #fff;
+            box-shadow: 0px 0px 1px rgba(0, 0, 0, 0.1), 0px 2px 1px rgba(0, 0, 0, 0.1);
+        }
+
+
+
+        .axis {
+            fill: none;
+            stroke: #000;
+            shape-rendering: crispEdges;
+        }
+
+        .axis text {
+            font: 11px sans-serif;
+            fill: #888;
+            stroke: none;
+            font-weight: bold;
+        }
+
+        .axis line {
+            stroke: #ccc;
+        }
+
+        .axis path {
+            stroke: #ccc;
+        }
+
+        .bar:hover {
+            fill: #E55;
+        }
+
+        .dot:hover {
+            fill: #E55;
+        }
+
+        .area:hover {
+            fill: #E55;
+        }
+
+        .line {
+            padding: 10px;
+        }
+
+        .line:hover {
+            stroke: #E55;
+        }
+    </style>
+
+    <body>
+        <div id="container">
+            <div id="chart"></div>
+        </div>
+        <button id="data1">data1</button>
+        <button id="data2">data2</button>
+        <script type="text/javascript" src="http://cdn.gbtags.com/jquery/1.11.1/jquery.min.js"></script>
+        <script type="text/javascript" src="http://cdn.gbtags.com/d3/3.4.11/d3.min.js"></script>
+        <script>
+            function getDate(dates) {
+                var dd = new Date();
+                dd.setDate(dd.getDate() + dates);
+                dd.setHours(0, 0, 0)
+
+                return dd;
+            }
+
+            var data_1 = [
+                {
+                    date: getDate(-2),
+                    data: 1212
+                },
+                {
+                    date: getDate(-1),
+                    data: 1412
+                },
+                {
+                    date: getDate(0),
+                    data: 1132
+                },
+                {
+                    date: getDate(1),
+                    data: 1615
+                },
+                {
+                    date: getDate(2),
+                    data: 1413
+                }
+            ];
+
+            var data_2 = [
+                {
+                    date: getDate(-4),
+                    data: 1512
+                },
+                {
+                    date: getDate(-3),
+                    data: 912
+                },
+                {
+                    date: getDate(-2),
+                    data: 412
+                },
+                {
+                    date: getDate(-1),
+                    data: 2412
+                },
+                {
+                    date: getDate(0),
+                    data: 1432
+                },
+                {
+                    date: getDate(1),
+                    data: 1275
+                },
+                {
+                    date: getDate(2),
+                    data: 2615
+                },
+                {
+                    date: getDate(3),
+                    data: 1615
+                },
+                {
+                    date: getDate(4),
+                    data: 2313
+                }
+            ];
+
+            var xAccessor = function (e) { return e.date };
+            var yAccessor = function (e) { return e.data };
+
+            //选择到svg的区域
+            var svgArea = document.getElementById('chart');
+            var svg = d3.select(svgArea).append('svg')
+                .attr('width', 800)
+                .attr('height', 450)
+                .append("g")
+                .attr("transform", "translate(20,20)");
+            var barSvg = svg.append('g');
+
+            //y轴建立
+            var yScale = d3.scale.linear()
+                //.domain([0,2000])
+                .range([400, 0]);
+            var yAxis = d3.svg.axis()
+                .scale(yScale)
+                .orient('left');
+
+            //添加y轴到svg里
+            svg.append('g')
+                .attr('class', 'y axis')
+                .attr('transform', 'translate(40,0)')
+                .call(yAxis);
+
+            //x轴建立
+            var xScale = d3.time.scale()
+                .range([0, 750]);
+            var xAxis = d3.svg.axis()
+                .scale(xScale)
+                .orient('bottom');
+
+            //添加x轴到svg里
+            svg.append("g")
+                .attr("class", 'x axis')
+                .attr("transform", 'translate(40,400)')
+                .call(xAxis);
+
+            //制作bar chart
+            function buildChart(data) {
+
+                var size = barSvg.selectAll('rect').size(), length = data.length;
+                var yExtents = [0, d3.max(data.map(function (e) {
+                    return yAccessor(e);
+                }))];
+                var xExtents = [
+                    d3.time.day.offset(d3.min(data.map(function (e) {
+                        return xAccessor(e);
+                    })), -1),
+                    d3.time.day.offset(d3.max(data.map(function (e) {
+                        return xAccessor(e);
+                    })), 1)
+                ];
+                xScale.domain(xExtents);
+                yScale.domain(yExtents);
+                svg.selectAll(".x.axis").transition()
+                    .duration(500)
+                    .call(xAxis);
+                svg.selectAll(".y.axis").transition()
+                    .duration(500)
+                    .call(yAxis);
+                if (!size || length > size) {// 当有新增数据时
+                    barSvg.selectAll('rect')
+                        .data(data)
+                        .enter().append('rect')
+                        .attr('x', function (d) {
+                            return xScale(xAccessor(d));
+                        })
+                        .attr('y', 400) // 先让他高度为0，
+                        .attr('height', 0)
+                        .attr('width', 750 / length / 2)
+                        .attr('fill', 'rgb(31, 119, 180)');
+                    barSvg//添加动态
+                        .selectAll('rect').transition().duration(500)
+                        .delay(function (d, i) {
+                            return i * 66;
+                        })
+                        .attr('x', function (d) {
+                            return xScale(xAccessor(d));
+                        })
+                        .attr('y', function (d) {
+                            return yScale(yAccessor(d));
+                        })
+                        .attr('width', 750 / length / 2)
+                        .attr('height', function (d) {
+                            return 400 - yScale(yAccessor(d));
+                        });
+                } else { //当有多余的rect需要减掉时
+                    var rects = barSvg.selectAll('rect').data(data);
+                    var rectSize = rects.exit().size();
+                    console.log(rectSize);
+                    rects.transition().duration(500)
+                        .delay(function (d, i) { return (rectSize - i) * 66; })
+                        .attr('x', function (d) {
+                            return xScale(xAccessor(d));
+                        })
+                        .attr('y', function (d) { return yScale(yAccessor(d)); })
+                        .attr('width', 750 / length / 2)
+                        .attr('height', function (d) { return 400 - yScale(yAccessor(d)); })
+                    rects.exit().attr('opacity', '1').transition().duration(500)
+                        .delay(function (d, i) { return (rectSize - i) * 66; })
+                        .attr('x', function (d) {
+                            return xScale(xExtents[1]) + 50;
+                        }).attr('opacity', '0').remove();
+                }
+
+
+
+            }
+            buildChart(data_1);
+
+            document.getElementById('data1').onclick = function () {
+                buildChart(data_1);
+            }
+            document.getElementById('data2').onclick = function () {
+                buildChart(data_2);
+            }
+
+        </script>
+    </body>
+
+</html>

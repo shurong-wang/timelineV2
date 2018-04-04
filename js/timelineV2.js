@@ -40,7 +40,8 @@ function initCanvas(companyId) {
         OWN: 'rgb(249, 225, 105)',
         BANK: 'rgb(227, 166, 0)',
         HOUSEHOLD_A: 'rgb(176, 114, 208)',
-        HOUSEHOLD_B: 'rgb(176, 114, 208)'
+        HOUSEHOLD_B: 'rgb(176, 114, 208)',
+        DISUSE: '#CCC'
     };
 
     toggleMask(true);
@@ -52,7 +53,7 @@ function initCanvas(companyId) {
     // 116035781    深圳华远电信有限公司
     // 112520475    香港昌兴公司
 
-    var relLabels = ['SERVE', 'INVEST_C', 'INVEST_H', 'OWN', 'TELPHONE', 'BANK', 'HOUSEHOLD_A', 'HOUSEHOLD_B'];
+    var relLabels = ['SERVE', 'INVEST_C', 'INVEST_H', 'OWN', 'TELPHONE', 'BANK', 'HOUSEHOLD_A', 'HOUSEHOLD_B', 'DISUSE'];
     companyId = 372950;
     COMPANY_ID = companyId;
 
@@ -576,32 +577,9 @@ function initCanvas(companyId) {
             data: barArr
         }];
 
-        // 拖动笔刷，更新关系图
-        var onBrushBar = function (startTime, endTime) {
-            if (startTime === endTime) {
-                edges_data.forEach(function (link) {
-                    link.lines.forEach(function (ln) {
-                        ln.disuse = false;
-                    });
-                    link.source.disuse = false;
-                });
-            } else {
-                edges_data.forEach(function (link) {
-                    link.lines.forEach(function (ln) {
-                        var time = new Date(ln.starDate).getTime();
-                        ln.disuse = !(time > startTime && time < endTime);
-                    });
-                    link.source.disuse = !link.lines.filter(function (d) {
-                        return !d.disuse;
-                    }).length;
-                });
-            }
-            slideTimeline();  // 根据时间轴范围变化，筛选关系（修改样式）
-        };
-
         // 时间轴配置
         var barOpts = {
-            fn: { onBrush: onBrushBar },
+            fn: { onBrush: slideTimeline },
             height: 80
         };
 
@@ -983,31 +961,34 @@ function initCanvas(companyId) {
     }
 
     // 时间轴筛选关系（修改样式）
-    var newRFlag, oldRFlag;
-    function slideTimeline() {
-        newRFlag = links.data().map(function (d) {
-            return d.lines.filter(function (d) {
-                return d.disuse;
-            }).join();
-        }).sort().join();
-
-        nodes.each(function (d) {
-            d3.select(this).classed('disuse', d.disuse);
-            d3.select(this).classed('selected', d.selected);
-        });
-
-        links.each(function (d) {
-            d3.select(this).selectAll('line').each(function (d) {
-                d3.select(this).classed('disuse', d.disuse);
-                d3.select(this).classed('selected', d.selected);
+    function slideTimeline(startTime, endTime) {
+        if (startTime === endTime) {
+            edges_data.forEach(({ source, target, lines }) => {
+                lines.forEach(function (line) {
+                    line.disuse = false;
+                });
             });
-        });
-
-        if (oldRFlag != newRFlag) {
-            renderFlowBall();
+        } else {
+            for (const { source, target, lines } of edges_data) {
+                for (const line of lines) {
+                    const time = new Date(line.starDate).getTime();
+                    line.disuse = (time < startTime || time > endTime);
+                }
+            }
         }
 
-        oldRFlag = newRFlag;
+        links.each(function () {
+            d3.select(this)
+                .selectAll('line.r-line')
+                .classed('disuse', ({ disuse }) => disuse)
+                .attr('marker-end', ({ disuse, type }) => disuse ? 'url(#DISUSE)' : `url(#${type})`);
+            d3.select(this)
+                .selectAll('text.r-text')
+                .classed('disuse', ({ disuse }) => disuse);
+        });
+
+        renderFlowBall();
+
     }
 
     function tick() {
@@ -1208,12 +1189,12 @@ function initCanvas(companyId) {
     function renderFlowBall() {
         // 清除数据流
         clearFlowAnim();
+
         // 添加数据流节点
-        var activeLinks = links.filter(d => !d.disuse);
-        activeLinks.each(function () {
+        links.each(function () {
             var m = 0;
             var linkG = d3.select(this);
-            var flowLines = linkG.selectAll('line').filter(d => ['TELPHONE', 'BANK'].includes(d.type));
+            var flowLines = linkG.selectAll('line').filter(d => ['TELPHONE', 'BANK'].includes(d.type) && !d.disuse);
             flowLines.each(function (d, k) {
                 if (['TELPHONE', 'BANK'].includes(d.type)) {
                     d.flow = linkG.append('circle')

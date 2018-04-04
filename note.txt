@@ -1,0 +1,52 @@
+var start = new Date().getTime();	//起始时间
+func();								//执行待测函数
+var end = new Date().getTime();		//接受时间
+console.log((end - start) + 'ms');	//返回函数执行需要时间
+
+
+const timeTaken = callback => {
+  console.time('timeTaken');
+  const r = callback();
+  console.timeEnd('timeTaken');
+  return r;
+};
+// timeTaken(() => Math.pow(2, 10)) -> 1024
+
+
+svg.on("mousedown.zoom", null);
+svg.on("mousemove.zoom", null);
+svg.on("dblclick.zoom", null);
+svg.on("touchstart.zoom", null);
+svg.on("wheel.zoom", null);
+svg.on("mousewheel.zoom", null);
+svg.on("MozMousePixelScroll.zoom", null);
+
+
+/**
+ * 更新关系图
+ * @param {Object} graph   
+ */
+function remove(graph, ids) {
+	// --> 2. 更新时间关系图
+	// 更新力学图数据
+	var { nodes_data, edges_data } = genForeData(graph);
+
+	// 更新关系（连线）
+	// links = links.data(edges_data);
+	links[0].forEach((d, i) => {
+		for (let i = 0; i < ids.length; i++) {
+			if (d.__data__.source.id == ids[i] || d.__data__.target.id == ids[i]) {
+				d.remove();
+			}
+		}
+	});
+	nodes[0].forEach((d, i) => {
+		for (let i = 0; i < ids.length; i++) {
+			if (d.__data__.id == ids[i]) {
+				d.remove();
+			}
+		}
+	});
+	// 开启力学计算
+	force.start();
+}

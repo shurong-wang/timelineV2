@@ -76,9 +76,9 @@ TimelineBar.prototype.renderTimeBar = function (data, opts, callback) {
     this.zoom = d3.behavior.zoom()
         .x(this.x)
         .scaleExtent([1, 1])
-        .scale(1.5)
+        .scale(1)
         .on('zoom', function () {
-            that.zoomed()
+            that.zoomed();
         });
 
     var extent = this.brush && this.brush.extent && this.brush.extent();

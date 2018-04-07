@@ -41,7 +41,7 @@ function initCanvas(companyId) {
         BANK: 'rgb(227, 166, 0)',
         HOUSEHOLD_A: 'rgb(176, 114, 208)',
         HOUSEHOLD_B: 'rgb(176, 114, 208)',
-        DISUSE: '#CCC'
+        INACTIVE: '#CCC'
     };
 
     toggleMask(true);
@@ -53,7 +53,7 @@ function initCanvas(companyId) {
     // 116035781    深圳华远电信有限公司
     // 112520475    香港昌兴公司
 
-    var relLabels = ['SERVE', 'INVEST_C', 'INVEST_H', 'OWN', 'TELPHONE', 'BANK', 'HOUSEHOLD_A', 'HOUSEHOLD_B', 'DISUSE'];
+    var relLabels = ['SERVE', 'INVEST_C', 'INVEST_H', 'OWN', 'TELPHONE', 'BANK', 'HOUSEHOLD_A', 'HOUSEHOLD_B', 'INACTIVE'];
     companyId = 372950;
     COMPANY_ID = companyId;
 
@@ -965,14 +965,14 @@ function initCanvas(companyId) {
         if (startTime === endTime) {
             edges_data.forEach(({ source, target, lines }) => {
                 lines.forEach(function (line) {
-                    line.disuse = false;
+                    line.inactive = false;
                 });
             });
         } else {
             for (const { source, target, lines } of edges_data) {
                 for (const line of lines) {
                     const time = new Date(line.starDate).getTime();
-                    line.disuse = (time < startTime || time > endTime);
+                    line.inactive = (time < startTime || time > endTime);
                 }
             }
         }
@@ -980,11 +980,11 @@ function initCanvas(companyId) {
         links.each(function () {
             d3.select(this)
                 .selectAll('line.r-line')
-                .classed('disuse', ({ disuse }) => disuse)
-                .attr('marker-end', ({ disuse, type }) => disuse ? 'url(#DISUSE)' : `url(#${type})`);
+                .classed('inactive', ({ inactive }) => inactive)
+                .attr('marker-end', ({ inactive, type }) => inactive ? 'url(#INACTIVE)' : `url(#${type})`);
             d3.select(this)
                 .selectAll('text.r-text')
-                .classed('disuse', ({ disuse }) => disuse);
+                .classed('inactive', ({ inactive }) => inactive);
         });
 
         renderFlowBall();
@@ -1194,7 +1194,7 @@ function initCanvas(companyId) {
         links.each(function () {
             var m = 0;
             var linkG = d3.select(this);
-            var flowLines = linkG.selectAll('line').filter(d => ['TELPHONE', 'BANK'].includes(d.type) && !d.disuse);
+            var flowLines = linkG.selectAll('line').filter(d => ['TELPHONE', 'BANK'].includes(d.type) && !d.inactive);
             flowLines.each(function (d, k) {
                 if (['TELPHONE', 'BANK'].includes(d.type)) {
                     d.flow = linkG.append('circle')

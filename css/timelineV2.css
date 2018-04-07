@@ -43,24 +43,12 @@ circle {
     text-anchor: middle
 }
 
-.link line.r-line.inactive {
-    stroke: #ccc;
-}
 
-.link text.r-text.inactive,
-marker.inactive {
-    fill: #ccc;
-}
 
 .node .n-circle {
     stroke-width: 1px;
     stroke: rgba(255, 255, 255, .3);
     cursor: pointer;
-}
-
-.node .n-circle.curr {
-    stroke: rgba(12, 214, 219, .6);
-    stroke-width: 5;
 }
 
 .node .n-text {
@@ -69,6 +57,21 @@ marker.inactive {
     stroke-width: 0;
     text-anchor: middle;
     cursor: pointer;
+}
+
+.link line.r-line.inactive {
+    stroke: #ccc;
+}
+
+.link text.r-text.inactive,
+.marker.inactive,
+.node .n-circle.inactive {
+    fill: #ccc;
+}
+
+.node .n-circle.curr {
+    stroke: rgba(12, 214, 219, .6);
+    stroke-width: 5;
 }
 
 .r-flow {

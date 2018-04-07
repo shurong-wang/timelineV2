@@ -62,8 +62,8 @@ function initCanvas(companyId) {
     //     companyId: COMPANY_ID
     // });
 
-    var url = './data/relations.final.json';
-    // var url = './data/relations.init.json';
+    // var url = './data/relations.final.json';
+    var url = './data/relations.init.json';
 
     // var url = './data/sub/relations.busine.json';
     // var url = './data/sub/relations.bank.json';
@@ -385,6 +385,7 @@ function initCanvas(companyId) {
         nodesMap = graph.nodes.reduce(function (map, curr) {
             const { id, ntype } = curr;
             if (!map[id]) { // 去重
+                curr.lines = [];
                 map[id] = curr;
                 nTypeSet.add(ntype);
             }
@@ -403,6 +404,8 @@ function initCanvas(companyId) {
                 if (!linesMap[id]) { // 去重
                     linesMap[id] = curr;
                     map[k].lines.push(curr);
+                    nodesMap[startNode].lines ? nodesMap[startNode].lines.push(id) : nodesMap[startNode].lines = [id];
+                    nodesMap[endNode].lines ? nodesMap[endNode].lines.push(id) : nodesMap[endNode].lines = [id];
                     rTypeMap[type] = (typeMap[type] || []).concat(curr);
                     flowMap[starDate] = (flowMap[starDate] || []).concat(curr);
                     rTypeSet.add(type);
@@ -412,7 +415,7 @@ function initCanvas(companyId) {
             }
             return map;
         }, {});
-
+        
         // 数据流比例尺
         flowScale = d3.scale.linear()
             .range([4, 8])
@@ -963,18 +966,20 @@ function initCanvas(companyId) {
     // 时间轴筛选关系（修改样式）
     function slideTimeline(startTime, endTime) {
         if (startTime === endTime) {
-            edges_data.forEach(({ source, target, lines }) => {
+            edges_data.forEach(({ lines }) => {
                 lines.forEach(function (line) {
                     line.inactive = false;
                 });
             });
+            nodes_data.forEach(node => node.inactive = false);
         } else {
-            for (const { source, target, lines } of edges_data) {
+            for (const { lines } of edges_data) {
                 for (const line of lines) {
                     const time = new Date(line.starDate).getTime();
                     line.inactive = (time < startTime || time > endTime);
                 }
             }
+            nodes_data.forEach(node => node.inactive = !node.lines.some(lineId => !linesMap[lineId].inactive));
         }
 
         links.each(function () {
@@ -984,6 +989,11 @@ function initCanvas(companyId) {
                 .attr('marker-end', ({ inactive, type }) => inactive ? 'url(#INACTIVE)' : `url(#${type})`);
             d3.select(this)
                 .selectAll('text.r-text')
+                .classed('inactive', ({ inactive }) => inactive);
+        });
+        nodes.each(function () {
+            d3.select(this)
+                .selectAll('circle.n-circle')
                 .classed('inactive', ({ inactive }) => inactive);
         });
 
